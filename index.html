@@ -238,7 +238,7 @@ const TABLE = 'app_data';
    daily_lesson      — {lesson_id, child_id, date, new_items, review_items, completed, seconds}
    word / letter / number / category — дополнительный контент, который можно добавить в базу без изменения кода:
      word:     {id, en, ru, kk, cat, emoji, level, ipa, hint}
-     letter:   {up, low, name, sound, snd, word, emoji, say}
+     letter:   {up, low, name, sound, snd, word, emoji}
      number:   {n, en, emoji}
      category: {id, ru, kk, icon, region}
    Язык интерфейса: русский (ru) или казахский (kk) — все тексты в словаре I18N.                                     */
@@ -308,33 +308,33 @@ const WORDS = [
   W('mouth','рот','body','👄','/maʊθ/','маус'),
 ];
 const LETTERS = [
-  ['A','эй','[æ]','э','apple','🍎','ay'],
-  ['B','би','[b]','б','bear','🐻','bee'],
-  ['C','си','[k]','к','cat','🐱','see'],
-  ['D','ди','[d]','д','dog','🐶','dee'],
-  ['E','и','[e]','э','egg','🥚','ee'],
-  ['F','эф','[f]','ф','fish','🐟','ef'],
-  ['G','джи','[g]','г','grapes','🍇','jee'],
-  ['H','эйч','[h]','х','house','🏠','aitch'],
-  ['I','ай','[ɪ]','и','insect','🐞','eye'],
-  ['J','джей','[dʒ]','дж','juice','🧃','jay'],
-  ['K','кей','[k]','к','kite','🪁','kay'],
-  ['L','эл','[l]','л','lion','🦁','el'],
-  ['M','эм','[m]','м','moon','🌙','em'],
-  ['N','эн','[n]','н','nose','👃','en'],
-  ['O','оу','[ɒ]','о','octopus','🐙','oh'],
-  ['P','пи','[p]','п','pig','🐷','pee'],
-  ['Q','кью','[kw]','кв','queen','👸','cue'],
-  ['R','а','[r]','р','rabbit','🐰','ar'],
-  ['S','эс','[s]','с','sun','☀️','ess'],
-  ['T','ти','[t]','т','tree','🌳','tee'],
-  ['U','ю','[ʌ]','а','umbrella','☂️','you'],
-  ['V','ви','[v]','в','van','🚐','vee'],
-  ['W','дабл-ю','[w]','уа','water','💧','double you'],
-  ['X','экс','[ks]','кс','box','📦','ex'],
-  ['Y','уай','[j]','й','yo-yo','🪀','why'],
-  ['Z','зед / зи','[z]','з','zebra','🦓','zed'],
-].map(([up,name,ipa,snd,word,emoji,say]) => ({up, low:up.toLowerCase(), name, ipa, snd, word, emoji, say}));
+  ['A','эй','[æ]','э','apple','🍎'],
+  ['B','би','[b]','б','bear','🐻'],
+  ['C','си','[k]','к','cat','🐱'],
+  ['D','ди','[d]','д','dog','🐶'],
+  ['E','и','[e]','э','egg','🥚'],
+  ['F','эф','[f]','ф','fish','🐟'],
+  ['G','джи','[g]','г','grapes','🍇'],
+  ['H','эйч','[h]','х','house','🏠'],
+  ['I','ай','[ɪ]','и','insect','🐞'],
+  ['J','джей','[dʒ]','дж','juice','🧃'],
+  ['K','кей','[k]','к','kite','🪁'],
+  ['L','эл','[l]','л','lion','🦁'],
+  ['M','эм','[m]','м','moon','🌙'],
+  ['N','эн','[n]','н','nose','👃'],
+  ['O','оу','[ɒ]','о','octopus','🐙'],
+  ['P','пи','[p]','п','pig','🐷'],
+  ['Q','кью','[kw]','кв','queen','👸'],
+  ['R','а','[r]','р','rabbit','🐰'],
+  ['S','эс','[s]','с','sun','☀️'],
+  ['T','ти','[t]','т','tree','🌳'],
+  ['U','ю','[ʌ]','а','umbrella','☂️'],
+  ['V','ви','[v]','в','van','🚐'],
+  ['W','дабл-ю','[w]','уа','water','💧'],
+  ['X','экс','[ks]','кс','box','📦'],
+  ['Y','уай','[j]','й','yo-yo','🪀'],
+  ['Z','зед / зи','[z]','з','zebra','🦓'],
+].map(([up,name,ipa,snd,word,emoji]) => ({up, low:up.toLowerCase(), name, ipa, snd, word, emoji, say:up})); // озвучка: сама буква — синтезатор назовёт её правильно (A → [eɪ])
 const NUMBERS = [
   [1,'one','🍎'],[2,'two','⭐'],[3,'three','🐟'],[4,'four','🎈'],[5,'five','🌸'],
   [6,'six','🍓'],[7,'seven','🐞'],[8,'eight','🍪'],[9,'nine','🚗'],[10,'ten','🫧'],
@@ -594,7 +594,7 @@ const Cloud = {
         if (t==='category' && d.id && d.ru && !CATEGORIES.find(c=>c.id===d.id)){ CATEGORIES.push({id:d.id, ru:d.ru, kk:d.kk||d.ru, icon:d.icon||'✨', region:d.region||'space'}); changed = true; }
         if (t==='word' && (d.en||d.id) && d.emoji){ const id = String(d.id||d.en).toLowerCase(); if (!WORDS.find(w=>w.id===id)){ WORDS.push({id, en:d.en||id, ru:d.ru||'', kk:d.kk||d.ru||'', cat:d.cat||'extra', emoji:d.emoji, ipa:d.ipa||'', hint:d.hint||'', level:d.level||2}); changed = true; } }
         if (t==='number' && d.n && d.en && !NUMBERS.find(n=>n.n===d.n)){ NUMBERS.push({n:d.n, en:d.en, emoji:d.emoji||'⭐'}); changed = true; }
-        if (t==='letter' && d.up && !LETTERS.find(l=>l.up===d.up)){ LETTERS.push({up:d.up, low:d.low||d.up.toLowerCase(), name:d.name||'', ipa:d.sound||'', snd:d.snd||'', word:d.word||'', emoji:d.emoji||'✨', say:d.say||d.up}); changed = true; }
+        if (t==='letter' && d.up && !LETTERS.find(l=>l.up===d.up)){ LETTERS.push({up:d.up, low:d.low||d.up.toLowerCase(), name:d.name||'', ipa:d.sound||'', snd:d.snd||'', word:d.word||'', emoji:d.emoji||'✨', say:d.up}); changed = true; }
       }
       if (WORDS.some(w=>w.cat==='extra') && !CATEGORIES.find(c=>c.id==='extra')) CATEGORIES.push({id:'extra', ru:'Новые слова', kk:'Жаңа сөздер', icon:'✨', region:'space'});
       NUMBERS.sort((a,b)=>a.n-b.n);
@@ -642,7 +642,7 @@ const Voice = {
   native(text){ return S.settings.ruVoice ? this.say(text.replace(/[^\p{L}\p{N}\s,.!?-]/gu,''), {lang:'native'}) : Promise.resolve(); },
   item(key, slow=false){
     const it = ITEMS[key]; if (!it) return Promise.resolve();
-    if (it.type==='L') return this.say(`${it.say}. ${it.l.word}`, {slow});
+    if (it.type==='L') return this.say(`${it.say}. ${it.l.word}.`, {slow});
     return this.say(it.say, {slow});
   },
 };
@@ -1173,7 +1173,7 @@ const A = {
     enterStep(); render(); window.scrollTo(0,0); speakStep();
   },
   hear(key, slow=false){ Sfx.tap(); Voice.item(key, slow); },
-  hearLetter(up){ const l = LETTERS.find(x=>x.up===up); Voice.say(l.say); },
+  hearLetter(up){ const l = LETTERS.find(x=>x.up===up); Voice.say(l.say+'.'); },
   hearRaw(t){ Voice.say(t); },
   async mic(){
     const p = UI.pr; if (!p || p.listening) return;
