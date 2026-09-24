@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Хоппи — английский для малышей</title>
+<meta name="description" content="Хоппи — добрый помощник для детей 5+, который каждый день понемногу знакомит с английским языком.">
+<meta name="theme-color" content="#FFB86B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#FFF7EC; --bg2:#FFEFD9; --card:#FFFFFF; --ink:#3D3553; --ink2:#7A7190;
+  --coral:#FF8A5B; --coral-d:#E96E3F; --green:#5CC97B; --green-d:#3FAE60;
+  --blue:#4D96FF; --blue-d:#2F7BE6; --yellow:#FFD24D; --purple:#A98BEF; --pink:#FF8FB8;
+  --line:#F1E3CE; --shadow:0 6px 0 rgba(61,53,83,.10), 0 10px 24px rgba(61,53,83,.08);
+  --r:26px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:700}
+body{min-height:100vh;background:
+  radial-gradient(circle at 10% 0%, #FFE3C2 0, transparent 40%),
+  radial-gradient(circle at 100% 30%, #E3F4FF 0, transparent 35%),
+  radial-gradient(circle at 0% 100%, #E6F8EA 0, transparent 40%), var(--bg);background-attachment:fixed}
+button{font-family:inherit;font-weight:800;color:inherit;cursor:pointer;border:none;background:none}
+input,select{font-family:inherit;font-weight:700;font-size:18px;color:var(--ink)}
+#app{max-width:560px;margin:0 auto;padding:14px 16px 40px;min-height:100vh}
+.center{text-align:center}
+.row{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap}
+.spacer{height:14px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:10px;margin-bottom:12px;min-height:56px}
+.top h2{margin:0;font-size:24px;font-weight:900;flex:1}
+.back{width:56px;height:56px;border-radius:18px;background:var(--card);box-shadow:var(--shadow);font-size:26px;flex:none}
+.back:active{transform:translateY(3px)}
+
+/* mascot */
+.hero{display:flex;align-items:flex-end;gap:10px;margin:6px 0 14px}
+.mascot{font-size:78px;line-height:1;animation:bob 2.6s ease-in-out infinite;flex:none;filter:drop-shadow(0 6px 4px rgba(0,0,0,.08))}
+.mascot.sm{font-size:54px}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+.bubble{position:relative;background:var(--card);border-radius:22px;padding:14px 18px;font-size:20px;line-height:1.3;box-shadow:var(--shadow);flex:1}
+.bubble.left:before{content:"";position:absolute;left:-10px;bottom:18px;border:10px solid transparent;border-right-color:#fff;border-left:0}
+.say-row{display:flex;align-items:center;gap:10px;margin-top:14px}
+.say-row .mascot{font-size:48px}
+
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:64px;padding:14px 20px;border-radius:24px;font-size:22px;color:#fff;background:var(--coral);box-shadow:0 6px 0 var(--coral-d);transition:transform .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--coral-d)}
+.btn.green{background:var(--green);box-shadow:0 6px 0 var(--green-d)}
+.btn.blue{background:var(--blue);box-shadow:0 6px 0 var(--blue-d)}
+.btn.soft{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.btn.huge{min-height:96px;font-size:30px;border-radius:30px;letter-spacing:.5px}
+.btn[disabled]{opacity:.5}
+.btn.pulse{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
+.tile{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:19px;min-height:128px;justify-content:center}
+.tile .ic{font-size:50px;line-height:1}
+.tile:active{transform:translateY(3px)}
+.tile.locked{opacity:.55}
+.parent-link{margin:22px auto 0;display:block;font-size:16px;color:var(--ink2);background:rgba(255,255,255,.7);padding:10px 18px;border-radius:16px}
+
+.plan{background:rgba(255,255,255,.75);border-radius:22px;padding:12px 16px;margin-top:16px;font-size:17px}
+.plan div{padding:4px 0}
+.plan b{font-weight:900}
+
+/* cards */
+.card{background:var(--card);border-radius:30px;box-shadow:var(--shadow);padding:22px 18px;margin-bottom:14px}
+.emoji-xl{font-size:110px;line-height:1.1;margin:4px 0}
+.emoji-l{font-size:70px;line-height:1.1}
+.word{font-size:48px;font-weight:900;letter-spacing:2px;text-transform:uppercase;margin:6px 0;color:var(--ink)}
+.word.letter{font-size:96px;letter-spacing:6px;text-transform:none}
+.ru{font-size:18px;color:var(--ink2)}
+.hint{font-size:17px;color:var(--ink2);margin-top:6px}
+.rbtn{width:88px;height:88px;border-radius:28px;font-size:36px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 5px 0 rgba(0,0,0,.15)}
+.rbtn small{font-size:12px;font-weight:800}
+.rbtn.blue{background:var(--blue)} .rbtn.green{background:var(--green)} .rbtn.purple{background:var(--purple)} .rbtn.coral{background:var(--coral)}
+.rbtn:active{transform:translateY(3px)}
+
+/* mic */
+.mic{width:124px;height:124px;border-radius:50%;background:linear-gradient(160deg,#FF9E7A,#FF6F91);color:#fff;font-size:58px;box-shadow:0 8px 0 #D9547A,0 14px 30px rgba(255,111,145,.35);margin:18px auto 6px;display:flex;align-items:center;justify-content:center}
+.mic.on{animation:listen 1s ease-in-out infinite;background:linear-gradient(160deg,#7BE495,#3FAE60);box-shadow:0 8px 0 #2F8E4C,0 0 0 14px rgba(92,201,123,.25)}
+@keyframes listen{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.mic-label{font-size:18px;color:var(--ink2)}
+.track{position:relative;height:64px;margin:18px 6px 4px;background:repeating-linear-gradient(90deg,#E7F6EA 0 18px,#D5EFDB 18px 36px);border-radius:32px}
+.track .runner{position:absolute;top:6px;font-size:44px;transition:left .8s cubic-bezier(.3,1.4,.5,1);transform:scaleX(-1)}
+.track .goal{position:absolute;right:10px;top:10px;font-size:38px}
+
+/* choice games */
+.prompt{text-align:center;margin:6px 0 16px}
+.opts{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.opts.n3{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.opts.n3 .t{font-size:clamp(18px,5.5vw,28px)}
+.opt{background:var(--card);border-radius:26px;box-shadow:var(--shadow);min-height:124px;font-size:66px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;border:4px solid transparent;transition:opacity .3s,transform .1s}
+.opt .t{font-size:28px;font-weight:900;letter-spacing:.5px;max-width:100%;overflow-wrap:anywhere}
+.opt .d{font-size:18px;color:var(--ink2)}
+.opt.txt{font-size:34px;font-weight:900}
+.opt:active{transform:scale(.97)}
+.opt.good{border-color:var(--green);background:#EFFFF3;animation:pop .5s}
+.opt.soft{opacity:.35}
+.opt.hint{border-color:var(--yellow);animation:pulse 1s infinite}
+.wiggle{animation:wiggle .45s}
+@keyframes wiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px) rotate(-2deg)}75%{transform:translateX(7px) rotate(2deg)}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+.count-box{font-size:48px;line-height:1.25;background:var(--card);border-radius:26px;box-shadow:var(--shadow);padding:14px;letter-spacing:4px;word-break:break-all;overflow-wrap:anywhere}
+
+/* build word */
+.slots{display:flex;justify-content:center;gap:8px;margin:14px 0 22px;flex-wrap:wrap}
+.slot{width:60px;height:70px;border-radius:18px;background:#fff;border:3px dashed #E6D5BC;font-size:40px;font-weight:900;display:flex;align-items:center;justify-content:center;text-transform:uppercase}
+.slot.fill{border:3px solid var(--green);background:#EFFFF3;animation:pop .4s}
+.slot.ghost{color:#E0D2BF}
+.tiles{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.ltile{width:70px;height:78px;border-radius:20px;background:var(--yellow);box-shadow:0 5px 0 #E3B22B;font-size:42px;font-weight:900;text-transform:uppercase}
+.ltile.used{visibility:hidden}
+
+/* match */
+.match{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.match .col{display:flex;flex-direction:column;gap:12px}
+.mitem{min-height:88px;border-radius:22px;background:#fff;box-shadow:var(--shadow);font-size:26px;font-weight:900;text-transform:uppercase;border:4px solid transparent}
+.mitem.pic{font-size:52px}
+.mitem.sel{border-color:var(--blue);background:#EEF5FF}
+.mitem.done{border-color:var(--green);background:#EFFFF3;opacity:.8}
+
+/* trail */
+.trail{display:flex;align-items:center;gap:6px;flex:1;padding:0 4px}
+.trail i{flex:1;height:12px;border-radius:6px;background:#EADBC4;display:block}
+.trail i.on{background:var(--green)}
+.trail i.cur{background:var(--yellow)}
+
+/* words grid */
+.tabs{display:flex;gap:10px;margin-bottom:14px}
+.tab{flex:1;min-height:64px;border-radius:20px;background:#fff;box-shadow:var(--shadow);font-size:20px}
+.tab.on{background:var(--blue);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid.g4{grid-template-columns:repeat(4,1fr)}
+.wcard{background:#fff;border-radius:22px;box-shadow:var(--shadow);padding:10px 4px;display:flex;flex-direction:column;align-items:center;min-height:112px;justify-content:center}
+.wcard .e{font-size:42px;line-height:1.1}
+.wcard .w{font-size:16px;font-weight:900;text-transform:uppercase;margin-top:4px;word-break:break-word;text-align:center}
+.wcard .L{font-size:38px;font-weight:900}
+.wcard.dim{opacity:.45}
+.cat-title{font-size:20px;font-weight:900;margin:18px 4px 10px;display:flex;gap:8px;align-items:center}
+
+/* world */
+.plant-box{text-align:center;background:linear-gradient(#E9F8FF,#fff 70%);border-radius:30px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.plant{display:inline-block;transform-origin:bottom center;line-height:1;animation:sway 3s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.pot{font-size:40px;margin-top:-6px}
+.room{background:linear-gradient(#FFF1DF,#FFE3C4);border-radius:30px;box-shadow:var(--shadow);padding:16px;min-height:130px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:flex-end;font-size:44px}
+.stickers{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.stk{aspect-ratio:1;border-radius:18px;background:#fff;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:34px}
+.stk.empty{background:rgba(255,255,255,.5);box-shadow:none;border:3px dashed #EAD9C0;color:#E0CDB2;font-size:22px}
+
+/* finish */
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50}
+.confetti span{position:absolute;top:-40px;font-size:30px;animation:fall 2.8s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.big-star{font-size:120px;animation:pop 1s}
+
+/* parent */
+.p-card{background:#fff;border-radius:22px;box-shadow:0 2px 12px rgba(61,53,83,.08);padding:16px 16px;margin-bottom:14px;font-weight:600}
+.p-card h3{margin:0 0 10px;font-size:18px;font-weight:900}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--bg);border-radius:16px;padding:12px}
+.stat b{display:block;font-size:28px;font-weight:900}
+.stat span{font-size:14px;color:var(--ink2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--bg);border-radius:12px;padding:6px 10px;font-size:15px}
+.field{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:16px}
+.field:last-child{border-bottom:0}
+.field select,.field input[type=time],.field input[type=number],.field input[type=text]{padding:8px 10px;border-radius:12px;border:2px solid var(--line);background:#fff;font-size:16px;max-width:55%}
+.field input[type=text]{min-width:0}
+.field .small-btn{flex:none}
+.muted{color:var(--ink2);font-size:14px;font-weight:600}
+.bars{display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:6px}
+.bars div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:var(--ink2)}
+.bars i{display:block;width:100%;background:var(--green);border-radius:8px 8px 4px 4px;min-height:3px}
+.gate input{width:100%;font-size:28px;text-align:center;padding:14px;border-radius:18px;border:3px solid var(--line);margin:12px 0}
+.small-btn{padding:10px 14px;border-radius:14px;background:var(--bg);font-size:15px}
+.small-btn.danger{color:#C2413B}
+
+/* onboarding */
+.ob{display:flex;flex-direction:column;gap:16px;padding-top:30px}
+.ob input.name{width:100%;font-size:30px;text-align:center;padding:16px;border-radius:24px;border:3px solid var(--line);background:#fff}
+.choice{display:flex;align-items:center;gap:14px;background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:16px 18px;font-size:22px;text-align:left;min-height:84px}
+.choice .ic{font-size:42px}
+.ages{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.ages button{min-height:72px;border-radius:20px;background:#fff;box-shadow:var(--shadow);font-size:28px}
+.ages button.on{background:var(--blue);color:#fff}
+
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:16px;font-size:16px;transition:transform .3s;z-index:60;max-width:90vw;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+.modal-bg{position:fixed;inset:0;background:rgba(61,53,83,.35);display:flex;align-items:flex-end;justify-content:center;z-index:40;padding:12px}
+.modal{background:var(--bg);border-radius:32px;max-width:540px;width:100%;padding:18px;max-height:92vh;overflow:auto;animation:up .25s}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media (max-width:380px){.word{font-size:38px}.emoji-xl{font-size:90px}.opt{min-height:104px;font-size:54px}.slot{width:48px;height:60px;font-size:32px}.ltile{width:58px;height:66px;font-size:34px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+<script>
+'use strict';
+/* =====================================================================
+   ХОППИ — английский для детей 5+
+   Один файл, без сборки. Данные хранятся на устройстве (localStorage)
+   и синхронизируются с Supabase (таблица app_data) в фоне.
+
+   Структура кода (легко расширять):
+     1. CONFIG        — подключение к Supabase
+     2. CONTENT       — буквы, числа, категории, слова, регионы мира
+     3. Utils
+     4. State/Store   — профиль ребёнка, прогресс, занятия, настройки
+     5. Cloud         — синхронизация с Supabase (app_data)
+     6. Voice/Sfx/Mic — озвучка (TTS), звуки, распознавание речи
+     7. SRS           — интервальное повторение
+     8. Lesson        — сборка ежедневного занятия
+     9. GAMES         — реестр мини-игр (добавить игру = добавить объект)
+    10. Screens       — экраны интерфейса
+   ===================================================================== */
+
+/* ---------- 1. CONFIG ---------- */
+const SUPABASE_URL_RAW = 'https://ldplolbihwzrdteqbkyd.supabase.co/rest/v1/';
+const SUPABASE_URL = SUPABASE_URL_RAW.replace(/\/rest\/v1\/?$/, ''); // клиенту нужен базовый адрес проекта
+const SUPABASE_KEY = 'sb_publishable_G8ynfXcP07wwqtJjwTkYhQ_uDhV9QxI';
+const TABLE = 'app_data';
+/* Типы записей в app_data (item_type):
+   child_profile     — {child_id, name, age, start_level, settings, rewards, stats}
+   learning_progress — {child_id, items:[{item_id, state, first_seen, last_seen, next_review, repetition_count, pronunciation_attempts, ...}]}
+   daily_lesson      — {lesson_id, child_id, date, new_items, review_items, completed, seconds}
+   word / letter / number / category — дополнительный контент, который можно добавить в базу без изменения кода:
+     word:     {id, en, ru, cat, emoji, level, ipa, hint}
+     letter:   {up, low, name, sound, word, emoji, say}
+     number:   {n, en, emoji}
+     category: {id, ru, icon, region}                                     */
+
+/* ---------- 2. CONTENT ---------- */
+const REGIONS = [
+  {id:'home',   ru:'Дом',    icon:'🏠', color:'#FFE3C4'},
+  {id:'forest', ru:'Лес',    icon:'🌳', color:'#DDF5E2'},
+  {id:'farm',   ru:'Ферма',  icon:'🐾', color:'#FFF1C9'},
+  {id:'sea',    ru:'Море',   icon:'🌊', color:'#DDEEFF'},
+  {id:'space',  ru:'Космос', icon:'🚀', color:'#E9E1FF'},
+];
+const CATEGORIES = [
+  {id:'greetings', ru:'Привет',   icon:'👋', region:'home'},
+  {id:'family',    ru:'Семья',    icon:'👨‍👩‍👧', region:'home'},
+  {id:'toys',      ru:'Игрушки',  icon:'🧸', region:'home'},
+  {id:'home',      ru:'Дом',      icon:'🏠', region:'home'},
+  {id:'nature',    ru:'Природа',  icon:'🌳', region:'forest'},
+  {id:'colors',    ru:'Цвета',    icon:'🎨', region:'forest'},
+  {id:'animals',   ru:'Животные', icon:'🐾', region:'farm'},
+  {id:'food',      ru:'Еда',      icon:'🍎', region:'farm'},
+  {id:'body',      ru:'Тело',     icon:'🙂', region:'sea'},
+];
+const W = (id, ru, cat, emoji, ipa, hint, level=1) => ({id, en:id, ru, cat, emoji, ipa, hint, level});
+const WORDS = [
+  W('hello','привет','greetings','👋','/həˈləʊ/','хэлоу'),
+  W('mother','мама','family','👩','/ˈmʌðə/','мазэ'),
+  W('father','папа','family','👨','/ˈfɑːðə/','фазэ'),
+  W('sister','сестра','family','👧','/ˈsɪstə/','систэ'),
+  W('brother','брат','family','👦','/ˈbrʌðə/','бразэ'),
+  W('baby','малыш','family','👶','/ˈbeɪbi/','бэйби'),
+  W('ball','мяч','toys','⚽','/bɔːl/','бол'),
+  W('doll','кукла','toys','🪆','/dɒl/','дол'),
+  W('car','машинка','toys','🚗','/kɑː/','ка'),
+  W('teddy bear','мишка','toys','🧸','/ˈtedi beə/','тэди бэа'),
+  W('house','дом','home','🏠','/haʊs/','хаус'),
+  W('room','комната','home','🛋️','/ruːm/','рум'),
+  W('door','дверь','home','🚪','/dɔː/','до'),
+  W('bed','кровать','home','🛏️','/bed/','бэд'),
+  W('chair','стул','home','🪑','/tʃeə/','чеа'),
+  W('sun','солнце','nature','☀️','/sʌn/','сан'),
+  W('moon','луна','nature','🌙','/muːn/','мун'),
+  W('star','звезда','nature','⭐','/stɑː/','ста'),
+  W('tree','дерево','nature','🌳','/triː/','три'),
+  W('flower','цветок','nature','🌸','/ˈflaʊə/','флауэ'),
+  W('red','красный','colors','🔴','/red/','рэд'),
+  W('blue','синий','colors','🔵','/bluː/','блу'),
+  W('green','зелёный','colors','🟢','/ɡriːn/','грин'),
+  W('yellow','жёлтый','colors','🟡','/ˈjeləʊ/','йелоу'),
+  W('pink','розовый','colors','🩷','/pɪŋk/','пинк'),
+  W('cat','кошка','animals','🐱','/kæt/','кэт'),
+  W('dog','собака','animals','🐶','/dɒɡ/','дог'),
+  W('bird','птица','animals','🐦','/bɜːd/','бёд'),
+  W('fish','рыбка','animals','🐟','/fɪʃ/','фиш'),
+  W('elephant','слон','animals','🐘','/ˈelɪfənt/','элифэнт'),
+  W('bear','медведь','animals','🐻','/beə/','бэа'),
+  W('apple','яблоко','food','🍎','/ˈæpl/','эпл'),
+  W('banana','банан','food','🍌','/bəˈnɑːnə/','бэнана'),
+  W('milk','молоко','food','🥛','/mɪlk/','милк'),
+  W('bread','хлеб','food','🍞','/bred/','брэд'),
+  W('water','вода','food','💧','/ˈwɔːtə/','уотэ'),
+  W('head','голова','body','🙆','/hed/','хэд'),
+  W('hand','рука','body','✋','/hænd/','хэнд'),
+  W('eye','глаз','body','👁️','/aɪ/','ай'),
+  W('nose','нос','body','👃','/nəʊz/','ноуз'),
+  W('mouth','рот','body','👄','/maʊθ/','маус'),
+];
+const LETTERS = [
+  ['A','эй','[æ] — как «э» в apple','apple','🍎','ay'],
+  ['B','би','[b] — как «б»','bear','🐻','bee'],
+  ['C','си','[k] — как «к»','cat','🐱','see'],
+  ['D','ди','[d] — как «д»','dog','🐶','dee'],
+  ['E','и','[e] — как «э»','egg','🥚','ee'],
+  ['F','эф','[f] — как «ф»','fish','🐟','ef'],
+  ['G','джи','[g] — как «г»','grapes','🍇','jee'],
+  ['H','эйч','[h] — лёгкий выдох «х»','house','🏠','aitch'],
+  ['I','ай','[ɪ] — короткое «и»','insect','🐞','eye'],
+  ['J','джей','[dʒ] — как «дж»','juice','🧃','jay'],
+  ['K','кей','[k] — как «к»','kite','🪁','kay'],
+  ['L','эл','[l] — как «л»','lion','🦁','el'],
+  ['M','эм','[m] — как «м»','moon','🌙','em'],
+  ['N','эн','[n] — как «н»','nose','👃','en'],
+  ['O','оу','[ɒ] — как «о»','octopus','🐙','oh'],
+  ['P','пи','[p] — как «п»','pig','🐷','pee'],
+  ['Q','кью','[kw] — как «кв»','queen','👸','cue'],
+  ['R','а','[r] — мягкое «р»','rabbit','🐰','ar'],
+  ['S','эс','[s] — как «с»','sun','☀️','ess'],
+  ['T','ти','[t] — как «т»','tree','🌳','tee'],
+  ['U','ю','[ʌ] — как «а»','umbrella','☂️','you'],
+  ['V','ви','[v] — как «в»','van','🚐','vee'],
+  ['W','дабл-ю','[w] — губки трубочкой «уа»','water','💧','double you'],
+  ['X','экс','[ks] — как «кс»','box','📦','ex'],
+  ['Y','уай','[j] — как «й»','yo-yo','🪀','why'],
+  ['Z','зед / зи','[z] — как «з»','zebra','🦓','zed'],
+].map(([up,name,sound,word,emoji,say]) => ({up, low:up.toLowerCase(), name, sound, word, emoji, say}));
+const NUMBERS = [
+  [1,'one','🍎'],[2,'two','⭐'],[3,'three','🐟'],[4,'four','🎈'],[5,'five','🌸'],
+  [6,'six','🍓'],[7,'seven','🐞'],[8,'eight','🍪'],[9,'nine','🚗'],[10,'ten','🫧'],
+].map(([n,en,emoji]) => ({n, en, emoji}));
+
+const STICKERS = ['🦄','🐙','🦖','🐳','🦋','🌈','🍭','🚂','🐼','🦊','🐧','🍉','🎈','🐢','⭐','🪐','🐝','🍩','🦁','🚁','🐬','🌻','🧁','🐨','🎠'];
+const ROOM_ITEMS = ['🛏️','🪴','🖼️','🧸','🎈','🪁','🎨','📚','🕰️','🎹','🪀','🛝'];
+const PLANT = ['🌰','🌱','🌿','🪴','🌳','🌳','🌸'];
+
+/* Единый справочник элементов обучения: ключи L:A, N:3, W:cat */
+let ITEMS = {};
+function buildItems(){
+  ITEMS = {};
+  for (const l of LETTERS) ITEMS['L:'+l.up] = {key:'L:'+l.up, type:'L', display:l.up+l.low, en:l.up, say:l.say, emoji:l.emoji, ru:'буква '+l.up, l};
+  for (const n of NUMBERS) ITEMS['N:'+n.n] = {key:'N:'+n.n, type:'N', display:n.en, en:n.en, say:n.en, emoji:n.emoji, ru:String(n.n), n};
+  for (const w of WORDS) ITEMS['W:'+w.id] = {key:'W:'+w.id, type:'W', display:w.en, en:w.en, say:w.en, emoji:w.emoji, ru:w.ru, w};
+}
+const LETTER_KEYS = () => LETTERS.map(l => 'L:'+l.up);
+const NUMBER_KEYS = () => NUMBERS.map(n => 'N:'+n.n);
+function wordOrder(){ // порядок изучения слов: по регионам мира и категориям
+  const out = ['W:hello','W:apple'];
+  for (const c of CATEGORIES) for (const w of WORDS) if (w.cat===c.id && !out.includes('W:'+w.id)) out.push('W:'+w.id);
+  return out.filter(k => ITEMS[k]);
+}
+
+/* ---------- 3. Utils ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-'+Date.now().toString(36)+Math.random().toString(36).slice(2));
+const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today = () => fmt(new Date());
+const addDays = (ds, n) => { const [y,m,d] = ds.split('-').map(Number); return fmt(new Date(y, m-1, d+n)); };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const POS = ['Отлично, продолжаем!','Ура! 🌟','Здорово!','Молодец!','Супер! ✨','Так держать!','Получается всё лучше!'];
+const RETRY = ['Попробуем ещё раз!','Давай послушаем ещё раз 👂','У тебя получится!','Давай ещё разок!'];
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'), 2600); }
+
+/* ---------- 4. State / Store ---------- */
+const STORE_KEY = 'hoppy_state_v1';
+const DEFAULT_SETTINGS = {duration:10, accent:'en-US', sfx:true, volume:0.9, reminder:'18:00', ui_lang:'ru', ruVoice:true};
+function freshState(){ return {version:1, child:null, settings:{...DEFAULT_SETTINGS}, progress:{}, lessons:[], stats:{days:{}}, rewards:{stickers:[], room:[]}, cloudIds:{}, current:null, notified:null}; }
+let S = freshState();
+const Store = {
+  load(){ try { const raw = localStorage.getItem(STORE_KEY); if (raw){ const s = JSON.parse(raw); S = Object.assign(freshState(), s); S.settings = {...DEFAULT_SETTINGS, ...(s.settings||{})}; } } catch(e){} },
+  saveLocal(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch(e){} },
+  save(){ this.saveLocal(); Cloud.schedule(); },
+};
+function dayStat(d=today()){ return S.stats.days[d] || (S.stats.days[d] = {sec:0, lessons:0}); }
+
+/* ---------- 5. Cloud (Supabase) ---------- */
+const Cloud = {
+  db:null, status:'off', timer:null, busy:false, broken:false,
+  init(){
+    try {
+      if (window.supabase && window.supabase.createClient){
+        this.db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{persistSession:false, autoRefreshToken:false}});
+        this.status = 'connecting';
+      }
+    } catch(e){ this.status = 'off'; }
+  },
+  schedule(){ if (!this.db || !S.child || this.broken) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.sync(), 1500); },
+  async findId(kind, field, value){
+    const {data, error} = await this.db.from(TABLE).select('id').eq('item_type', kind).eq('data->>'+field, value).order('created_at', {ascending:false}).limit(1);
+    if (error) throw error;
+    return data && data[0] ? data[0].id : null;
+  },
+  async upsertDoc(kind, localKey, field, value, doc){
+    let id = S.cloudIds[localKey];
+    if (!id) id = await this.findId(kind, field, value);
+    if (id){
+      const {data, error} = await this.db.from(TABLE).update({data:doc}).eq('id', id).select('id');
+      if (error) throw error;
+      if (data && data.length){ S.cloudIds[localKey] = id; return; }
+    }
+    const {data, error} = await this.db.from(TABLE).insert({item_type:kind, data:doc}).select('id').single();
+    if (error){ // вставка могла пройти, а чтение — нет: не создаём дубли
+      const again = await this.findId(kind, field, value).catch(()=>null);
+      if (again){ S.cloudIds[localKey] = again; return; }
+      throw error;
+    }
+    S.cloudIds[localKey] = data.id;
+  },
+  async sync(){
+    if (!this.db || !S.child || this.busy) return;
+    this.busy = true;
+    try {
+      const cid = S.child.id;
+      await this.upsertDoc('child_profile', 'profile', 'child_id', cid, {
+        child_id:cid, name:S.child.name, age:S.child.age, start_level:S.child.start_level, created_at:S.child.created_at,
+        settings:S.settings, rewards:S.rewards, stats:S.stats, current:S.current,
+      });
+      await this.upsertDoc('learning_progress', 'progress', 'child_id', cid, {
+        child_id:cid, updated_at:new Date().toISOString(),
+        items:Object.entries(S.progress).map(([item_id, p]) => ({item_id, state:SRS.state(p), ...p})),
+      });
+      for (const l of S.lessons){
+        if (l.synced) continue;
+        await this.upsertDoc('daily_lesson', 'lesson:'+l.id, 'lesson_id', l.id, {lesson_id:l.id, child_id:cid, date:l.date, kind:l.kind, new_items:l.new_items, review_items:l.review_items, completed:l.completed, seconds:l.seconds||0});
+        l.synced = true;
+        delete S.cloudIds['lesson:'+l.id];
+      }
+      this.status = 'ok';
+    } catch(e){
+      console.warn('[Хоппи] Supabase недоступен, данные сохраняются на устройстве', e);
+      this.status = 'local';
+    }
+    this.busy = false;
+    Store.saveLocal();
+    if (UI.screen === 'parent') render();
+  },
+  async loadContent(){ // дополнительный контент из app_data
+    if (!this.db) return;
+    try {
+      const {data, error} = await this.db.from(TABLE).select('item_type,data').in('item_type', ['word','letter','number','category']).limit(1000);
+      if (error || !data) return;
+      let changed = false;
+      for (const {item_type:t, data:d} of data){
+        if (!d) continue;
+        if (t==='category' && d.id && d.ru && !CATEGORIES.find(c=>c.id===d.id)){ CATEGORIES.push({id:d.id, ru:d.ru, icon:d.icon||'✨', region:d.region||'space'}); changed = true; }
+        if (t==='word' && (d.en||d.id) && d.emoji){ const id = String(d.id||d.en).toLowerCase(); if (!WORDS.find(w=>w.id===id)){ WORDS.push({id, en:d.en||id, ru:d.ru||'', cat:d.cat||'extra', emoji:d.emoji, ipa:d.ipa||'', hint:d.hint||'', level:d.level||2}); changed = true; } }
+        if (t==='number' && d.n && d.en && !NUMBERS.find(n=>n.n===d.n)){ NUMBERS.push({n:d.n, en:d.en, emoji:d.emoji||'⭐'}); changed = true; }
+        if (t==='letter' && d.up && !LETTERS.find(l=>l.up===d.up)){ LETTERS.push({up:d.up, low:d.low||d.up.toLowerCase(), name:d.name||'', sound:d.sound||'', word:d.word||'', emoji:d.emoji||'✨', say:d.say||d.up}); changed = true; }
+      }
+      if (WORDS.some(w=>w.cat==='extra') && !CATEGORIES.find(c=>c.id==='extra')) CATEGORIES.push({id:'extra', ru:'Новые слова', icon:'✨', region:'space'});
+      NUMBERS.sort((a,b)=>a.n-b.n);
+      if (changed){ buildItems(); render(); }
+      this.status = this.status==='connecting' ? 'ok' : this.status;
+    } catch(e){ this.status = 'local'; }
+  },
+  async restore(code){
+    if (!this.db) throw new Error('нет подключения');
+    const q = (kind) => this.db.from(TABLE).select('id,data').eq('item_type', kind).eq('data->>child_id', code).order('created_at', {ascending:false});
+    const [p, pr, ls] = await Promise.all([q('child_profile').limit(1), q('learning_progress').limit(1), q('daily_lesson').limit(1000)]);
+    if (p.error) throw p.error;
+    if (!p.data || !p.data[0]) throw new Error('профиль не найден');
+    const d = p.data[0].data;
+    const st = freshState();
+    st.child = {id:d.child_id, name:d.name, age:d.age, start_level:d.start_level, created_at:d.created_at};
+    st.settings = {...DEFAULT_SETTINGS, ...(d.settings||{})};
+    st.rewards = d.rewards || st.rewards; st.stats = d.stats || st.stats;
+    st.cloudIds.profile = p.data[0].id;
+    if (pr.data && pr.data[0]){ st.cloudIds.progress = pr.data[0].id; for (const it of (pr.data[0].data.items||[])){ const {item_id, state, ...rest} = it; st.progress[item_id] = rest; } }
+    if (ls.data) st.lessons = ls.data.map(r => ({id:r.data.lesson_id, date:r.data.date, kind:r.data.kind, new_items:r.data.new_items||[], review_items:r.data.review_items||[], completed:r.data.completed, seconds:r.data.seconds||0, synced:true})).reverse();
+    S = st; Store.saveLocal();
+  },
+};
+
+/* ---------- 6. Voice / Sfx / Mic ---------- */
+const Voice = {
+  voices:[],
+  init(){ if (!('speechSynthesis' in window)) return; const load = () => this.voices = speechSynthesis.getVoices(); load(); speechSynthesis.onvoiceschanged = load; },
+  en(){
+    const acc = S.settings.accent, norm = v => v.lang.replace('_','-');
+    const vs = this.voices.filter(v => norm(v).startsWith(acc));
+    return vs.find(v => /natural|neural|google|samantha|daniel|serena|aria|jenny|libby|sonia|ava|allison/i.test(v.name)) || vs[0] || this.voices.find(v => v.lang.startsWith('en')) || null;
+  },
+  ruV(){ return this.voices.find(v => v.lang.replace('_','-').startsWith('ru')) || null; },
+  say(text, {slow=false, lang='en'} = {}){
+    if (!('speechSynthesis' in window) || !text) return Promise.resolve();
+    try { speechSynthesis.cancel(); } catch(e){}
+    const u = new SpeechSynthesisUtterance(text);
+    if (lang==='en'){ u.voice = this.en(); u.lang = S.settings.accent; u.rate = slow ? .55 : .85; u.pitch = 1.1; }
+    else { const v = this.ruV(); if (!v) return Promise.resolve(); u.voice = v; u.lang = 'ru-RU'; u.rate = 1; u.pitch = 1.15; }
+    u.volume = S.settings.volume;
+    return new Promise(res => { u.onend = u.onerror = () => res(); speechSynthesis.speak(u); setTimeout(res, 7000); });
+  },
+  ru(text){ return S.settings.ruVoice ? this.say(text.replace(/[^\p{L}\p{N}\s,.!?-]/gu,''), {lang:'ru'}) : Promise.resolve(); },
+  item(key, slow=false){
+    const it = ITEMS[key]; if (!it) return Promise.resolve();
+    if (it.type==='L') return this.say(`${it.say}. ${it.l.word}`, {slow});
+    return this.say(it.say, {slow});
+  },
+};
+const Sfx = {
+  ctx:null,
+  tone(freqs, dur=.12, type='sine'){
+    if (!S.settings.sfx || S.settings.volume <= 0) return;
+    try {
+      this.ctx = this.ctx || new (window.AudioContext || window.webkitAudioContext)();
+      const c = this.ctx; let t = c.currentTime + .01;
+      for (const f of freqs){
+        const o = c.createOscillator(), g = c.createGain();
+        o.type = type; o.frequency.value = f;
+        g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(Math.max(.002, .22*S.settings.volume), t+.02); g.gain.exponentialRampToValueAtTime(.0001, t+dur);
+        o.connect(g).connect(c.destination); o.start(t); o.stop(t+dur+.03); t += dur*.8;
+      }
+    } catch(e){}
+  },
+  yay(){ this.tone([523,659,784,1047], .13); },
+  soft(){ this.tone([440,392], .16, 'triangle'); },
+  tap(){ this.tone([660], .06); },
+  sparkle(){ this.tone([784,988,1175,1568,2093], .09); },
+};
+const Mic = {
+  get supported(){ return !!(window.SpeechRecognition || window.webkitSpeechRecognition); },
+  listen(){
+    return new Promise(resolve => {
+      const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!R) return resolve({unsupported:true});
+      const r = new R(); r.lang = S.settings.accent; r.interimResults = false; r.maxAlternatives = 5; r.continuous = false;
+      let done = false;
+      const fin = v => { if (done) return; done = true; try { r.abort(); } catch(e){} resolve(v); };
+      r.onresult = e => { const alts=[]; for (const res of e.results) for (let i=0;i<res.length;i++) alts.push(res[i].transcript); fin({alts}); };
+      r.onerror = e => fin({error:e.error});
+      r.onend = () => fin({alts:[]});
+      try { r.start(); } catch(e){ fin({error:'start'}); }
+      setTimeout(() => fin({alts:[]}), 7000);
+    });
+  },
+};
+const HOMO = {one:['won','1'],two:['to','too','2'],three:['3','tree'],four:['for','4'],five:['5'],six:['6','sex'],seven:['7'],eight:['ate','8'],nine:['9'],ten:['10'],
+  bear:['bare'],sun:['son'],eye:['i','aye','hi'],hello:['hallo','hullo','hi'],red:['read'],blue:['blew'],car:['cars'],cat:['cut','kat'],dog:['doug'],flower:['flour'],
+  pink:['ping'],nose:['knows','nos'],bed:['bad'],hand:['and'],moon:['mune'],tree:['three'],water:['what are']};
+function lev(a, b){ const m=a.length, n=b.length, d=Array.from({length:m+1},(_,i)=>[i]); for(let j=1;j<=n;j++) d[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) d[i][j]=Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1]+(a[i-1]===b[j-1]?0:1)); return d[m][n]; }
+function judgeSpeech(key, alts){
+  const it = ITEMS[key];
+  const clean = s => s.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+  const heard = alts.map(clean).filter(Boolean);
+  if (!heard.length) return 'quiet';
+  if (it.type==='L') return 'great'; // буквы распознаются плохо — хвалим за попытку
+  const t = clean(it.en), variants = [t, ...(HOMO[t]||[])];
+  let best = 0;
+  for (const h of heard){
+    for (const v of variants){
+      if (h===v || (' '+h+' ').includes(' '+v+' ')) return 'great';
+      best = Math.max(best, 1 - lev(h, v)/Math.max(h.length, v.length));
+      for (const tok of h.split(' ')) best = Math.max(best, 1 - lev(tok, v)/Math.max(tok.length, v.length));
+    }
+  }
+  return best >= .75 ? 'great' : best >= .45 ? 'close' : 'again';
+}
+
+/* ---------- 7. SRS — интервальное повторение ---------- */
+/* Этапы: 1 → повтор через 1 день, 2 → через 2, 3 → через 3, 4 → через 7, 5 → через 14.
+   Для нового слова это дни 1, 2, 4, 7, 14. Трудность — повтор уже завтра. */
+const INTERVALS = {1:1, 2:2, 3:3, 4:7, 5:14};
+const SRS = {
+  get(key){ return S.progress[key]; },
+  ensure(key){
+    return S.progress[key] || (S.progress[key] = {first_seen:today(), last_seen:null, next_review:today(), repetition_count:0, stage:0, pronunciation_attempts:0, pron_ok:0, pron_fail:0, struggles:0});
+  },
+  seen(key){ return !!S.progress[key]; },
+  practice(key, struggled){
+    const p = this.ensure(key), d = today();
+    p.last_seen = d; p.repetition_count++;
+    if (struggled){ p.struggles++; p.stage = Math.max(1, p.stage-1); p.next_review = addDays(d, 1); }
+    else if (!p.next_review || p.next_review <= d){ p.stage = Math.min(5, p.stage+1); p.next_review = addDays(d, INTERVALS[p.stage]); }
+  },
+  // Внутренний статус — только для приложения и родителей, ребёнку не показывается
+  state(p){ if (!p) return 'new'; if (p.stage>=5 && !p.struggles) return 'mastered'; if (p.next_review && p.next_review<=today() && p.stage>0) return 'review'; if (p.stage>=4) return 'mastered'; return p.stage===0 ? 'new' : 'learning'; },
+  due(){
+    const d = today();
+    return Object.entries(S.progress).filter(([k,p]) => ITEMS[k] && p.next_review && p.next_review <= d && p.last_seen !== d)
+      .sort((a,b) => (b[1].struggles + b[1].pron_fail) - (a[1].struggles + a[1].pron_fail) || a[1].next_review.localeCompare(b[1].next_review)).map(([k]) => k);
+  },
+  difficult(){ return Object.entries(S.progress).filter(([k,p]) => ITEMS[k] && (p.struggles>=2 || p.pron_fail>=2)).sort((a,b)=>(b[1].struggles+b[1].pron_fail)-(a[1].struggles+a[1].pron_fail)).map(([k])=>k); },
+  pron(key, level){
+    const p = this.ensure(key); p.pronunciation_attempts++;
+    if (level==='great'){ p.pron_ok++; p.pron_fail = Math.max(0, p.pron_fail-1); }
+    else if (level==='again'){ p.pron_fail++; if (p.next_review > addDays(today(),1)) p.next_review = addDays(today(),1); }
+  },
+};
+
+/* ---------- 8. Lesson — ежедневное занятие ---------- */
+const DURATION = {5:{words:1, reviews:3, games:1}, 10:{words:2, reviews:5, games:2}, 15:{words:3, reviews:7, games:3}};
+const GAME_ROT_W = ['findPicture','listenChoose','match','build'];
+function buildLesson(kind='daily'){
+  const cfg = DURATION[S.settings.duration] || DURATION[10];
+  const first = !S.lessons.some(l => l.completed) && !SRS.seen('W:hello');
+  const n = S.lessons.length;
+  const fresh = [];
+  if (kind==='daily'){
+    if (first){ fresh.push('W:hello','L:A','W:apple'); }
+    else {
+      const nl = LETTER_KEYS().find(k => !SRS.seen(k)); if (nl) fresh.push(nl);
+      fresh.push(...wordOrder().filter(k => !SRS.seen(k)).slice(0, cfg.words));
+      const nn = NUMBER_KEYS().find(k => !SRS.seen(k)); if (nn && n % 2 === 1) fresh.push(nn);
+    }
+  }
+  let reviews = SRS.due().filter(k => !fresh.includes(k)).slice(0, kind==='daily' ? cfg.reviews : cfg.reviews+3);
+  if (kind!=='daily' && reviews.length < 4){
+    const seen = shuffle(Object.keys(S.progress).filter(k => ITEMS[k] && !reviews.includes(k)));
+    reviews = reviews.concat(seen.slice(0, 6 - reviews.length));
+  }
+  const pool = [...fresh, ...reviews];
+  const steps = [];
+  if (first) steps.push({t:'hello', key:'W:hello'});
+  for (const k of fresh) if (!(first && k==='W:hello')) steps.push({t:'learn', key:k});
+  const has = t => pool.filter(k => ITEMS[k].type===t);
+  const wordsPool = has('W'), letters = has('L'), nums = has('N');
+  const games = [];
+  if (first){ games.push({t:'game', g:'listenChoose', keys:['W:hello','W:apple']}, {t:'game', g:'findLetter', keys:['L:A']}); }
+  else {
+    if (wordsPool.length){ const g1 = GAME_ROT_W[n % GAME_ROT_W.length]; games.push({t:'game', g:g1, keys:wordsPool}); }
+    if (letters.length) games.push({t:'game', g:'findLetter', keys:letters});
+    if (nums.length) games.push({t:'game', g:'count', keys:nums});
+    if (wordsPool.length && games.length < cfg.games+1){ const g2 = GAME_ROT_W[(n+1) % GAME_ROT_W.length]; games.push({t:'game', g:g2==='build'&&!wordsPool.some(buildable)?'findPicture':g2, keys:wordsPool}); }
+    if (!games.length) games.push({t:'game', g:'listenChoose', keys:Object.keys(S.progress).filter(k=>k.startsWith('W:')).slice(0,6)});
+  }
+  const trimmed = games.slice(0, Math.max(2, cfg.games+1));
+  // произношение: новое слово или то, что даётся труднее
+  const pronKey = (!first && (fresh.find(k => ITEMS[k].type!=='L') || SRS.difficult().find(k=>ITEMS[k].type!=='L') || wordsPool[0])) || null;
+  steps.push(trimmed[0]);
+  if (pronKey) steps.push({t:'pronounce', key:pronKey});
+  steps.push(...trimmed.slice(1));
+  steps.push({t:'finish'});
+  return {id:uid(), date:today(), kind, first, new_items:fresh, review_items:reviews, steps:steps.filter(Boolean), i:0, touched:{}, started:Date.now()};
+}
+function lessonDoneToday(){ return S.lessons.some(l => l.date===today() && l.kind==='daily' && l.completed); }
+function planFor(lesson){
+  const out = [];
+  for (const k of lesson.new_items){ const it = ITEMS[k]; if (!it) continue;
+    if (it.type==='L') out.push(`🔤 Новая буква: <b>${it.l.up}</b>`);
+    else if (it.type==='N') out.push(`🔢 Новое число: <b>${it.n.n} — ${it.en.toUpperCase()}</b>`);
+    else out.push(`${it.emoji} Новое слово: <b>${esc(it.en.toUpperCase())}</b>`); }
+  if (lesson.review_items.length) out.push(`🔁 Повторяем: ${lesson.review_items.slice(0,5).map(k=>ITEMS[k].emoji).join(' ')}`);
+  const pr = lesson.steps.find(s=>s.t==='pronounce'||s.t==='hello'); if (pr) out.push(`🎤 Произносим: <b>${esc(ITEMS[pr.key].en.toUpperCase())}</b>`);
+  const g = lesson.steps.filter(s=>s.t==='game').map(s=>GAMES[s.g].title); if (g.length) out.push(`🎮 Игра: ${g.join(', ')}`);
+  return out;
+}
+
+/* ---------- 9. GAMES — мини-игры ---------- */
+const buildable = k => ITEMS[k] && ITEMS[k].type==='W' && /^[a-z]{2,6}$/.test(ITEMS[k].en);
+function distractors(target, type, count, pred=()=>true){
+  const t = ITEMS[target];
+  let all = Object.values(ITEMS).filter(i => i.type===type && i.key!==target && i.emoji!==t.emoji && pred(i));
+  const seen = shuffle(all.filter(i => SRS.seen(i.key))), other = shuffle(all.filter(i => !SRS.seen(i.key)));
+  return seen.concat(other).slice(0, count).map(i => i.key);
+}
+function choiceRound(g, target, opts){ return {kind:'choice', target, options:shuffle([target, ...opts]), wrong:[], solved:false}; }
+const GAMES = {
+  findPicture:{ title:'Найди картинку', icon:'🖼️', types:['W'],
+    round(g, k){ return {...choiceRound(g, k, distractors(k,'W',3)), prompt:`<div class="word">${esc(ITEMS[k].en)}</div><div class="hint">Найди картинку 👇</div>`}; },
+    opt:k => ITEMS[k].emoji },
+  listenChoose:{ title:'Услышь и выбери', icon:'👂', types:['W'], listen:true,
+    round(g, k){ return {...choiceRound(g, k, distractors(k,'W',3)), prompt:`<button class="rbtn blue" style="margin:0 auto" onclick="A.hear('${k}')">🔊<small>ещё раз</small></button><div class="hint">Послушай и найди 👇</div>`}; },
+    opt:k => ITEMS[k].emoji },
+  findLetter:{ title:'Найди букву', icon:'🔤', types:['L'], listen:true,
+    round(g, k){ return {...choiceRound(g, k, distractors(k,'L',3)), prompt:`<button class="rbtn blue" style="margin:0 auto" onclick="A.hear('${k}')">🔊<small>ещё раз</small></button><div class="hint">Какую букву я назвал? 👇</div>`}; },
+    opt:k => `<span class="t" style="font-size:52px">${ITEMS[k].l.up}</span>` },
+  count:{ title:'Сосчитай', icon:'🔢', types:['N'],
+    round(g, k){ const n = ITEMS[k].n.n; const near = NUMBERS.filter(x=>x.n!==n && Math.abs(x.n-n)<=3).map(x=>'N:'+x.n);
+      return {...choiceRound(g, k, shuffle(near).slice(0, 2)), prompt:`<div class="count-box">${ITEMS[k].emoji.repeat(n)}</div><div class="hint">Сколько здесь? 👇</div>`}; },
+    opt:k => `<span class="t">${ITEMS[k].en.toUpperCase()}</span><span class="d">${ITEMS[k].n.n}</span>` },
+  repeat:{ title:'Повтори за мной', icon:'🦜', types:['W','N'],
+    round(g, k){ UI.pr = newPr(k); return {kind:'repeat', target:k}; } },
+  build:{ title:'Собери слово', icon:'🧩', types:['W'], filter:buildable,
+    round(g, k){ const letters = ITEMS[k].en.split(''); let tiles; do { tiles = shuffle(letters.map((c,i)=>({c,i}))); } while (letters.length>1 && tiles.map(t=>t.c).join('')===ITEMS[k].en);
+      return {kind:'build', target:k, tiles, placed:0, used:[], misses:0, wrongTile:-1}; } },
+  match:{ title:'Соедини', icon:'🔗', types:['W'], rounds:1,
+    round(g, k){ let keys = [...new Set(g.keys.filter(x=>ITEMS[x].type==='W'))]; keys = shuffle(keys).slice(0,3);
+      if (keys.length < 3) keys = keys.concat(distractors(keys[0]||'W:cat','W',3-keys.length, i=>!keys.includes(i.key)));
+      return {kind:'match', target:keys[0], keys, left:shuffle(keys), right:shuffle(keys), sel:null, done:[], wrong:null}; } },
+};
+function gameTargets(id, keys){ const G = GAMES[id]; return keys.filter(k => ITEMS[k] && G.types.includes(ITEMS[k].type) && (!G.filter || G.filter(k))); }
+function startGame(id, keys, {embedded=false, onDone=null} = {}){
+  let targets = gameTargets(id, keys);
+  if (!targets.length) targets = gameTargets(id, Object.keys(S.progress));
+  if (!targets.length) targets = gameTargets(id, starterKeys());
+  const rounds = GAMES[id].rounds || Math.min(4, Math.max(2, targets.length));
+  const queue = [];
+  while (queue.length < rounds) queue.push(...shuffle(targets));
+  UI.game = {id, keys:targets, queue:queue.slice(0, rounds), i:0, rounds, embedded, onDone, touched:{}, msg:'', r:null, finished:false};
+  nextRound();
+}
+function nextRound(){
+  const g = UI.game;
+  if (g.i >= g.rounds){ return finishGame(); }
+  g.r = GAMES[g.id].round(g, g.queue[g.i]); g.msg = '';
+  render();
+  if (GAMES[g.id].listen) setTimeout(() => Voice.item(g.r.target), 350);
+  if (g.id==='repeat') setTimeout(() => Voice.item(g.r.target), 350);
+}
+function touch(key, struggled){ const g = UI.game; if (!g) return; g.touched[key] = !!(g.touched[key] || struggled); }
+function finishGame(){
+  const g = UI.game; g.finished = true;
+  if (g.embedded && UI.lesson){ for (const [k,v] of Object.entries(g.touched)) UI.lesson.touched[k] = !!(UI.lesson.touched[k] || v); }
+  else { for (const [k,v] of Object.entries(g.touched)) SRS.practice(k, v); Store.save(); }
+  Sfx.sparkle();
+  if (g.onDone) return g.onDone();
+  render();
+}
+function starterKeys(){ return ['W:hello','W:apple','W:cat','W:dog','W:ball','W:sun','L:A','L:B','L:C','L:D','N:1','N:2','N:3']; }
+function newPr(key){ return {key, attempts:0, listening:false, msg:'', manual:false, level:null}; }
+
+/* ---------- 10. Screens ---------- */
+const UI = {screen:'home', params:{}, lesson:null, game:null, pr:null, modal:null, ob:{step:0, name:'', age:5}, wordsTab:'W', gate:null};
+function go(screen, params={}){ UI.screen = screen; UI.params = params; UI.modal = null; render(); window.scrollTo(0,0); }
+function mascotSay(text, sm=false){ return `<div class="say-row"><div class="mascot ${sm?'sm':''}">🐰</div><div class="bubble left">${text}</div></div>`; }
+function topBar(title, back='home', extra=''){ return `<div class="top"><button class="back" aria-label="Назад" onclick="A.go('${back}')">⬅️</button>${title?`<h2>${title}</h2>`:''}${extra}</div>`; }
+function growth(){ const days = new Set(S.lessons.filter(l=>l.completed).map(l=>l.date)).size; return {days, stage:Math.min(PLANT.length-1, days===0?0:days<2?1:days<4?2:days<7?3:days<12?4:days<20?5:6)}; }
+function plantHtml(size=90){ const {stage} = growth(); return `<div class="plant" style="font-size:${size*(0.7+stage*0.08)}px">${PLANT[stage]}</div>`; }
+
+function render(){
+  const app = $('#app');
+  if (!S.child && UI.screen!=='onboarding' && UI.screen!=='parentGate' && UI.screen!=='parent') UI.screen = 'onboarding';
+  const fn = Screens[UI.screen] || Screens.home;
+  app.innerHTML = fn() + (UI.modal ? `<div class="modal-bg" onclick="if(event.target===this)A.closeModal()"><div class="modal">${UI.modal()}</div></div>` : '');
+}
+
+const Screens = {
+  onboarding(){
+    const o = UI.ob;
+    if (o.step===0) return `<div class="ob center">
+      <div class="mascot" style="font-size:130px;margin:0 auto">🐰</div>
+      <h1 style="font-size:40px;margin:0;font-weight:900">Привет! 👋</h1>
+      <div class="bubble" style="font-size:22px">Я — зайчик <b>Хоппи</b>! Давай начнём наше английское приключение!</div>
+      <button class="btn huge pulse" onclick="A.ob(1)">Поехали! ▶</button></div>`;
+    if (o.step===1) return `<div class="ob">
+      ${mascotSay('Как тебя зовут? 😊')}
+      <input class="name" id="nm" maxlength="20" placeholder="Имя" value="${esc(o.name)}" autocomplete="off">
+      <div class="muted center">Достаточно имени — больше ничего не нужно</div>
+      <button class="btn" onclick="A.obName()">Дальше ▶</button></div>`;
+    if (o.step===2) return `<div class="ob">
+      ${mascotSay(`${esc(o.name)}, сколько тебе лет?`)}
+      <div class="ages">${[4,5,6,7,8].map(a=>`<button class="${o.age===a?'on':''}" onclick="A.obAge(${a})">${a}${a===8?'+':''}</button>`).join('')}</div>
+      <button class="btn" onclick="A.ob(3)">Дальше ▶</button></div>`;
+    return `<div class="ob">
+      ${mascotSay('Ты уже знаешь английские буквы?')}
+      <button class="choice" onclick="A.obDone('zero')"><span class="ic">🌱</span>Я начинаю с нуля</button>
+      <button class="choice" onclick="A.obDone('some')"><span class="ic">🌿</span>Я немного знаю</button>
+      <button class="choice" onclick="A.obDone('learned')"><span class="ic">🌳</span>Я уже немного учился</button>
+      <div class="muted center">Любой ответ подходит — так Хоппи поймёт, с чего начать</div></div>`;
+  },
+
+  home(){
+    const done = lessonDoneToday();
+    if (!UI.lesson || UI.lesson.date!==today()) UI.lesson = restoreCurrent() || null;
+    const inProgress = UI.lesson && UI.lesson.kind==='daily' && UI.lesson.i>0 && !done;
+    const preview = done ? null : (UI.lesson && UI.lesson.kind==='daily' ? UI.lesson : (UI.preview && UI.preview.date===today() ? UI.preview : (UI.preview = buildLesson('daily'))));
+    const greet = done ? `Сегодня мы немного выучили английский! 🌱 Завтра продолжим.` : `Сегодня нас ждёт маленькое приключение 🌈`;
+    return `
+      <div class="hero"><div class="mascot">🐰</div><div class="bubble left"><div style="font-size:24px;font-weight:900">Привет, ${esc(S.child.name)}! 👋</div>${greet}</div></div>
+      ${done
+        ? `<button class="btn huge green" onclick="A.startLesson('extra')">🎈 Ещё немного поиграем</button>`
+        : `<button class="btn huge pulse" onclick="A.startLesson('daily')">${inProgress?'▶ ПРОДОЛЖИМ':'🌟 НАЧАТЬ'}</button>`}
+      ${preview ? `<div class="plan"><div style="color:var(--ink2)">Сегодня:</div>${planFor(preview).map(x=>`<div>${x}</div>`).join('')}</div>` : ''}
+      <div class="menu">
+        <button class="tile" onclick="A.go('world')"><span class="ic">${PLANT[growth().stage]}</span>Мой мир</button>
+        <button class="tile" onclick="A.go('words')"><span class="ic">📚</span>Мои слова</button>
+        <button class="tile" onclick="A.go('games')"><span class="ic">🎮</span>Игры</button>
+        <button class="tile" onclick="A.go('speak')"><span class="ic">🎤</span>Произношение</button>
+      </div>
+      <button class="parent-link" onclick="A.go('parentGate')">⚙️ Родителям</button>`;
+  },
+
+  lesson(){
+    const L = UI.lesson; if (!L) return Screens.home();
+    const st = L.steps[L.i];
+    const trail = `<div class="trail">${L.steps.map((s,i)=>`<i class="${i<L.i?'on':i===L.i?'cur':''}"></i>`).join('')}</div>`;
+    const top = `<div class="top"><button class="back" aria-label="Пауза" onclick="A.pauseLesson()">⏸️</button>${trail}<span style="font-size:34px">🐰</span></div>`;
+    if (st.t==='hello') return top + `<div class="center" style="font-size:34px;font-weight:900;color:var(--coral);letter-spacing:2px">WELCOME!</div>` + prView(true) + nextBtn(UI.pr.attempts>0);
+    if (st.t==='learn') return top + learnCard(st.key) + `<button class="btn green" onclick="A.next()">Дальше ▶</button>`;
+    if (st.t==='pronounce') return top + `<div class="center hint" style="font-size:20px">🎤 Скажи вместе с Хоппи</div>` + prView() + nextBtn(UI.pr.attempts>0);
+    if (st.t==='game') return top + gameView();
+    return finishView(L);
+  },
+
+  games(){
+    const list = Object.entries(GAMES);
+    if (UI.game && !UI.game.embedded && UI.params.play) return topBar('', 'games') + gameView();
+    return topBar('🎮 Игры') + `<div class="menu" style="margin-top:4px">${list.map(([id,g])=>`<button class="tile" onclick="A.play('${id}')"><span class="ic">${g.icon}</span>${g.title}</button>`).join('')}</div>
+      ${mascotSay('Выбирай любую игру! Ошибаться можно — так мы и учимся 💛', true)}`;
+  },
+
+  speak(){
+    if (UI.params.key) return topBar('🎤 Произношение', 'speak') + prView() + `<div class="spacer"></div><button class="btn soft" onclick="A.speakNext()">Другое слово ➡️</button>`;
+    const keys = speakList();
+    return topBar('🎤 Произношение') + mascotSay('Выбери слово — послушаем и скажем вместе!', true) + `<div class="spacer"></div>
+      <div class="grid">${keys.map(k=>`<button class="wcard" onclick="A.speakWord('${k}')"><span class="e">${ITEMS[k].emoji}</span><span class="w">${esc(ITEMS[k].en)}</span></button>`).join('')}</div>`;
+  },
+
+  words(){
+    const tab = UI.wordsTab, region = UI.params.region;
+    const tabs = `<div class="tabs"><button class="tab ${tab==='L'?'on':''}" onclick="A.tab('L')">🔤 Буквы</button><button class="tab ${tab==='N'?'on':''}" onclick="A.tab('N')">🔢 Числа</button><button class="tab ${tab==='W'?'on':''}" onclick="A.tab('W')">🐱 Слова</button></div>`;
+    let body = '';
+    if (tab==='L') body = `<div class="grid g4">${LETTERS.map(l=>{const k='L:'+l.up;return `<button class="wcard ${SRS.seen(k)?'':'dim'}" onclick="A.card('${k}')"><span class="L">${l.up}${l.low}</span><span class="e" style="font-size:26px">${l.emoji}</span></button>`}).join('')}</div>`;
+    else if (tab==='N') body = `<div class="grid">${NUMBERS.map(n=>{const k='N:'+n.n;return `<button class="wcard ${SRS.seen(k)?'':'dim'}" onclick="A.card('${k}')"><span class="L">${n.n}</span><span class="w">${n.en}</span></button>`}).join('')}</div>
+      <div class="plan center">✨ Числа 11–20 откроются чуть позже</div>`;
+    else {
+      const cats = CATEGORIES.filter(c => !region || c.region===region);
+      const blocks = cats.map(c => { const ws = WORDS.filter(w => w.cat===c.id && SRS.seen('W:'+w.id)); if (!ws.length) return '';
+        return `<div class="cat-title">${c.icon} ${c.ru}</div><div class="grid">${ws.map(w=>`<button class="wcard" onclick="A.card('W:${w.id}')"><span class="e">${w.emoji}</span><span class="w">${esc(w.en)}</span></button>`).join('')}</div>`; }).join('');
+      body = blocks || mascotSay('Здесь появятся слова, которые мы узнаем вместе! 🌟', true);
+      body += `<div class="plan center">✨ Новые слова появятся в следующих приключениях</div>`;
+    }
+    return topBar(region ? REGIONS.find(r=>r.id===region).icon+' '+REGIONS.find(r=>r.id===region).ru : '📚 Мои слова', region?'world':'home') + tabs + body;
+  },
+
+  world(){
+    const {days, stage} = growth();
+    const st = S.rewards.stickers, room = S.rewards.room;
+    const regions = REGIONS.map(r => ({...r, open:regionOpen(r.id)}));
+    return topBar('🌍 Мой мир') + `
+      <div class="plant-box">${plantHtml(80)}<div class="pot">🪴</div>
+        <div style="font-size:18px;margin-top:6px">${days ? 'Наш росток растёт с каждым занятием! 🌱' : 'Посадим семечко на первом занятии! 🌰'}</div></div>
+      <div class="cat-title">🗺️ Места</div>
+      <div class="menu" style="margin-top:0">${regions.map(r=>`<button class="tile ${r.open?'':'locked'}" style="background:${r.color}" onclick="${r.open?`A.region('${r.id}')`:`toast('Это место скоро откроется! ✨')`}"><span class="ic">${r.open?r.icon:'🔒'}</span>${r.ru}</button>`).join('')}</div>
+      <div class="cat-title">🏡 Комната Хоппи</div>
+      <div class="room"><span style="font-size:56px">🐰</span>${room.map(x=>`<span>${x}</span>`).join('')}${room.length?'':'<span class="muted" style="font-size:16px;align-self:center">Здесь появятся вещи для Хоппи</span>'}</div>
+      <div class="cat-title">🌟 Мои наклейки</div>
+      <div class="stickers">${STICKERS.slice(0, Math.max(10, Math.ceil((st.length+1)/5)*5)).map((_,i)=>st[i]?`<div class="stk">${st[i]}</div>`:`<div class="stk empty">?</div>`).join('')}</div>`;
+  },
+
+  parentGate(){
+    if (!UI.gate){ const a = 6+Math.floor(Math.random()*4), b = 5+Math.floor(Math.random()*5); UI.gate = {a, b}; }
+    return topBar('Для взрослых', S.child?'home':'onboarding') + `<div class="card gate center">
+      <div style="font-size:20px">Чтобы войти, решите пример:</div>
+      <div style="font-size:44px;font-weight:900;margin-top:10px">${UI.gate.a} × ${UI.gate.b} = ?</div>
+      <input id="gate" type="number" inputmode="numeric" autocomplete="off" placeholder="Ответ">
+      <button class="btn blue" onclick="A.gateCheck()">Войти</button></div>`;
+  },
+
+  parent(){
+    const days = new Set(S.lessons.filter(l=>l.completed).map(l=>l.date)).size;
+    const sec = Object.values(S.stats.days).reduce((s,d)=>s+(d.sec||0),0);
+    const seen = Object.keys(S.progress).filter(k=>ITEMS[k]);
+    const byType = t => seen.filter(k=>ITEMS[k].type===t);
+    const topics = CATEGORIES.map(c => ({c, n:WORDS.filter(w=>w.cat===c.id && SRS.seen('W:'+w.id)).length, total:WORDS.filter(w=>w.cat===c.id).length})).filter(x=>x.n);
+    const often = seen.slice().sort((a,b)=>S.progress[b].repetition_count-S.progress[a].repetition_count).slice(0,8);
+    const extra = SRS.difficult().slice(0,10);
+    const last7 = Array.from({length:7}, (_,i)=>addDays(today(), i-6)).map(d=>({d, m:Math.round((S.stats.days[d]?.sec||0)/60)}));
+    const maxM = Math.max(5, ...last7.map(x=>x.m));
+    const s = S.settings;
+    const cloud = {ok:'✅ Синхронизировано с облаком', local:'💾 Сохраняется на устройстве (облако недоступно)', connecting:'⏳ Подключение к облаку…', off:'💾 Сохраняется на устройстве'}[Cloud.status];
+    const chip = k => `<span class="chip">${ITEMS[k].emoji} ${esc(ITEMS[k].type==='L'?ITEMS[k].l.up:ITEMS[k].en)}${ITEMS[k].ru&&ITEMS[k].type==='W'?' — '+esc(ITEMS[k].ru):''}</span>`;
+    return topBar('Родителям') + `
+      <div class="p-card"><h3>👧 ${esc(S.child?.name||'')}${S.child?.age?`, ${S.child.age} лет`:''}</h3>
+        <div class="stats">
+          <div class="stat"><b>${days}</b><span>дней с английским</span></div>
+          <div class="stat"><b>${Math.round(sec/60)}</b><span>минут занятий</span></div>
+          <div class="stat"><b>${byType('W').length}</b><span>знакомых слов</span></div>
+          <div class="stat"><b>${byType('L').length} / ${byType('N').length}</b><span>букв / чисел</span></div>
+        </div>
+        <div class="muted" style="margin-top:10px">Минуты за последние 7 дней</div>
+        <div class="bars">${last7.map(x=>`<div><i style="height:${Math.max(3,x.m/maxM*70)}px"></i>${x.d.slice(8)}</div>`).join('')}</div>
+      </div>
+      <div class="p-card"><h3>📖 Темы</h3>${topics.length?`<div class="chips">${topics.map(t=>`<span class="chip">${t.c.icon} ${t.c.ru}: ${t.n} из ${t.total}</span>`).join('')}</div>`:'<div class="muted">Темы появятся после первого занятия</div>'}</div>
+      <div class="p-card"><h3>🐱 Слова, с которыми познакомились</h3>${byType('W').length?`<div class="chips">${byType('W').map(chip).join('')}</div>`:'<div class="muted">Пока нет</div>'}</div>
+      <div class="p-card"><h3>🔁 Чаще всего повторялись</h3>${often.length?`<div class="chips">${often.map(k=>chip(k).replace('</span>',` · ${S.progress[k].repetition_count}×</span>`)).join('')}</div>`:'<div class="muted">Пока нет</div>'}</div>
+      <div class="p-card"><h3>🌱 Стоит потренировать ещё</h3>${extra.length?`<div class="chips">${extra.map(chip).join('')}</div><div class="muted" style="margin-top:8px">Хоппи сам покажет эти слова чаще. Можно послушать их вместе в разделе «Произношение».</div>`:'<div class="muted">Всё идёт своим темпом 💛</div>'}</div>
+      <div class="p-card"><h3>⚙️ Настройки</h3>
+        <div class="field">Возраст ребёнка<input type="number" min="3" max="12" value="${S.child?.age||5}" onchange="A.setAge(this.value)"></div>
+        <div class="field">Длительность занятия<select onchange="A.set('duration', +this.value)">${[5,10,15].map(m=>`<option value="${m}" ${s.duration===m?'selected':''}>${m} минут</option>`).join('')}</select></div>
+        <div class="field">Вариант английского<select onchange="A.set('accent', this.value)"><option value="en-US" ${s.accent==='en-US'?'selected':''}>🇺🇸 Американский</option><option value="en-GB" ${s.accent==='en-GB'?'selected':''}>🇬🇧 Британский</option></select></div>
+        <div class="field">Звуки в играх<select onchange="A.set('sfx', this.value==='1')"><option value="1" ${s.sfx?'selected':''}>Включены</option><option value="0" ${!s.sfx?'selected':''}>Выключены</option></select></div>
+        <div class="field">Подсказки голосом по-русски<select onchange="A.set('ruVoice', this.value==='1')"><option value="1" ${s.ruVoice?'selected':''}>Включены</option><option value="0" ${!s.ruVoice?'selected':''}>Выключены</option></select></div>
+        <div class="field">Громкость<input type="range" min="0" max="1" step="0.1" value="${s.volume}" onchange="A.set('volume', +this.value)"></div>
+        <div class="field">Время напоминания<input type="time" value="${s.reminder}" onchange="A.set('reminder', this.value)"></div>
+        <div class="field">Язык интерфейса<select onchange="A.set('ui_lang', this.value)"><option value="ru" selected>Русский</option><option value="en" disabled>English (скоро)</option></select></div>
+        <div class="field"><span class="muted">Напоминание приходит, пока приложение открыто в браузере</span><button class="small-btn" onclick="A.notifyPerm()">🔔 Разрешить</button></div>
+      </div>
+      <div class="p-card"><h3>🔒 Данные и безопасность</h3>
+        <div class="muted">Храним только имя, возраст и прогресс обучения. Нет чата, рекламы, публичных профилей и рейтингов. Микрофон включается только по нажатию 🎤 для тренировки произношения; запись не сохраняется.</div>
+        <div class="field">Статус<span class="muted" style="text-align:right">${cloud}</span></div>
+        <div class="field">Код ребёнка (для другого устройства)<span class="chip" style="user-select:all;font-size:12px;max-width:55%;word-break:break-all">${esc(S.child?.id||'—')}</span></div>
+        <div class="field"><input type="text" id="restore" placeholder="Вставьте код" style="max-width:none;flex:1"><button class="small-btn" onclick="A.restore()">Восстановить</button></div>
+        <div class="field"><span></span><button class="small-btn danger" onclick="A.reset()">Начать заново</button></div>
+      </div>`;
+  },
+};
+
+function regionOpen(id){
+  if (id==='home') return true;
+  if (id==='space') return WORDS.every(w => SRS.seen('W:'+w.id));
+  return CATEGORIES.some(c => c.region===id && WORDS.some(w => w.cat===c.id && SRS.seen('W:'+w.id)));
+}
+function speakList(){
+  const diff = SRS.difficult().filter(k=>ITEMS[k].type!=='L');
+  const seen = Object.keys(S.progress).filter(k=>ITEMS[k] && ITEMS[k].type!=='L' && !diff.includes(k));
+  const list = [...diff, ...seen];
+  return list.length ? list : ['W:hello','W:cat','W:dog','W:apple','W:sun','N:1','N:2','N:3'];
+}
+function restoreCurrent(){ const c = S.current; return c && c.date===today() ? c : null; }
+
+function learnCard(key){
+  const it = ITEMS[key];
+  if (it.type==='L'){ const l = it.l;
+    return `<div class="card center">
+      <div class="word letter">${l.up} ${l.low}</div>
+      <div class="hint" style="font-size:20px">Буква называется «${l.name}»</div>
+      <div class="hint">Звук ${l.sound}</div>
+      <div class="emoji-l" style="margin-top:10px">${l.emoji}</div>
+      <div style="font-size:30px;font-weight:900;text-transform:uppercase">${l.up}<span style="color:var(--ink2)">${esc(l.word.slice(1))}</span></div>
+      <div class="spacer"></div>
+      <div class="row"><button class="rbtn blue" onclick="A.hearLetter('${l.up}')">🔊<small>буква</small></button>
+      <button class="rbtn purple" onclick="A.hearRaw('${esc(l.word)}')">${l.emoji}<small>слово</small></button>
+      <button class="rbtn green" onclick="A.hear('${key}', true)">🐢<small>медленно</small></button></div></div>`;
+  }
+  if (it.type==='N'){ const n = it.n;
+    return `<div class="card center">
+      <div class="count-box" style="box-shadow:none;background:var(--bg)">${it.emoji.repeat(n.n)}</div>
+      <div class="word" style="font-size:80px;margin-bottom:0">${n.n}</div>
+      <div class="word">${n.en}</div>
+      <div class="row"><button class="rbtn blue" onclick="A.hear('${key}')">🔊<small>слушать</small></button>
+      <button class="rbtn green" onclick="A.hear('${key}', true)">🐢<small>медленно</small></button></div></div>`;
+  }
+  return `<div class="card center">
+    <div class="emoji-xl">${it.emoji}</div>
+    <div class="word">${esc(it.en)}</div>
+    <div class="ru">${esc(it.ru)}${it.w.hint?` · <span style="opacity:.8">[${esc(it.w.hint)}]</span>`:''}</div>
+    <div class="spacer"></div>
+    <div class="row"><button class="rbtn blue" onclick="A.hear('${key}')">🔊<small>слушать</small></button>
+    <button class="rbtn green" onclick="A.hear('${key}', true)">🐢<small>медленно</small></button></div></div>`;
+}
+function prView(isHello=false){
+  const p = UI.pr, it = ITEMS[p.key];
+  const pos = Math.min(p.attempts, 4) / 4;
+  const msg = p.msg || (isHello ? 'Послушай: <b>Hello!</b> А теперь скажи <b>Hello!</b> 🎤' : 'Послушай и скажи вместе со мной! 🎤');
+  return `<div class="card center">
+    <div class="emoji-xl">${it.emoji}</div>
+    <div class="word ${it.type==='L'?'letter':''}">${esc(it.type==='L'?it.l.up+it.l.low:it.en)}</div>
+    <div class="row"><button class="rbtn blue" onclick="A.hear('${p.key}')">🔊<small>слушать</small></button>
+      <button class="rbtn green" onclick="A.hear('${p.key}', true)">🐢<small>медленно</small></button></div>
+    <button class="mic ${p.listening?'on':''}" onclick="A.mic()" aria-label="Сказать">🎤</button>
+    <div class="mic-label">${p.listening?'Слушаю… говори! 👂':'Нажми и скажи'}</div>
+    ${p.manual?`<div class="spacer"></div><button class="btn soft" onclick="A.saidIt()">✅ Я сказал(а)!</button>`:''}
+    <div class="track"><span class="runner" style="left:calc(${pos*100}% - ${pos*80}px + 6px)">🐰</span><span class="goal">🥕</span></div>
+  </div>${mascotSay(msg, true)}`;
+}
+function nextBtn(show){ return show ? `<div class="spacer"></div><button class="btn green" onclick="A.next()">Дальше ▶</button>` : `<div class="spacer"></div><button class="btn soft" onclick="A.next()">Пропустить ➡️</button>`; }
+
+function gameView(){
+  const g = UI.game; if (!g) return '';
+  if (g.finished && !g.onDone) return `<div class="card center"><div class="big-star">🌟</div><div style="font-size:26px;font-weight:900">Отлично, продолжаем!</div></div>
+    <button class="btn green" onclick="A.play('${g.id}')">🔁 Ещё раз</button><div class="spacer"></div><button class="btn soft" onclick="A.go('games')">🎮 Другие игры</button>`;
+  const G = GAMES[g.id], r = g.r;
+  const head = `<div class="center" style="font-size:20px;margin-bottom:6px">${G.icon} ${G.title} <span class="muted">· ${g.i+1} из ${g.rounds}</span></div>`;
+  const msg = mascotSay(g.msg || 'Я с тобой! 💛', true);
+  if (r.kind==='choice'){
+    const n = r.options.length;
+    return head + `<div class="prompt">${r.prompt}</div><div class="opts ${n===3?'n3':''}">${r.options.map((k,i)=>{
+      const cls = r.solved && k===r.target ? 'good' : r.wrong.includes(k) ? 'soft' : (r.wrong.length>=2 && k===r.target ? 'hint' : '');
+      return `<button class="opt ${cls} ${r.wiggle===k?'wiggle':''}" onclick="A.choose(${i})">${G.opt(k)}</button>`; }).join('')}</div>` + msg;
+  }
+  if (r.kind==='repeat') return head + prView() + (UI.pr.attempts>0 ? `<button class="btn green" onclick="A.gameNext()">Дальше ▶</button>` : `<button class="btn soft" onclick="A.gameNext()">Пропустить ➡️</button>`);
+  if (r.kind==='build'){
+    const word = ITEMS[r.target].en;
+    return head + `<div class="center"><div class="emoji-xl" style="font-size:90px">${ITEMS[r.target].emoji}</div>
+      <button class="rbtn blue" style="margin:4px auto 0;width:70px;height:70px;font-size:28px" onclick="A.hear('${r.target}')">🔊</button></div>
+      <div class="slots">${word.split('').map((c,i)=>`<div class="slot ${i<r.placed?'fill':(r.misses>=2&&i===r.placed?'ghost':'')}">${i<r.placed||(r.misses>=2&&i===r.placed)?c:''}</div>`).join('')}</div>
+      <div class="tiles">${r.tiles.map((t,i)=>`<button class="ltile ${r.used.includes(i)?'used':''} ${r.wrongTile===i?'wiggle':''}" onclick="A.tile(${i})">${t.c}</button>`).join('')}</div>` + msg;
+  }
+  if (r.kind==='match'){
+    return head + `<div class="hint center" style="margin-bottom:12px">Нажми на слово, а потом на картинку</div><div class="match">
+      <div class="col">${r.left.map(k=>`<button class="mitem ${r.done.includes(k)?'done':''} ${r.sel===k?'sel':''}" onclick="A.mLeft('${k}')">${esc(ITEMS[k].en)}</button>`).join('')}</div>
+      <div class="col">${r.right.map(k=>`<button class="mitem pic ${r.done.includes(k)?'done':''} ${r.wrong===k?'wiggle':''}" onclick="A.mRight('${k}')">${ITEMS[k].emoji}</button>`).join('')}</div></div>` + msg;
+  }
+  return '';
+}
+
+function finishView(L){
+  const stk = L.reward;
+  return `<div class="center" style="padding-top:20px">
+    <div class="big-star">🌟</div>
+    <div style="font-size:30px;font-weight:900;margin:6px 0">${L.first ? 'Наше первое приключение закончено!' : L.kind==='daily' ? 'Приключение закончено!' : 'Здорово поиграли!'}</div>
+    <div style="font-size:22px">${L.kind==='daily' ? 'Завтра продолжим! 🐰' : 'Ты молодец! 💛'}</div>
+    ${stk ? `<div class="card" style="margin-top:18px"><div style="font-size:18px">Новая наклейка!</div><div style="font-size:90px">${stk}</div>${L.roomItem?`<div style="font-size:18px">И подарок для комнаты Хоппи: <span style="font-size:36px">${L.roomItem}</span></div>`:''}</div>` : ''}
+    <div class="plant-box">${plantHtml(70)}<div style="font-size:18px">Росток стал чуть больше! 🌱</div></div>
+    <button class="btn huge green" onclick="A.go('home')">🏠 Домой</button></div>`;
+}
+function confetti(){
+  const c = document.createElement('div'); c.className = 'confetti';
+  for (let i=0;i<28;i++){ const s = document.createElement('span'); s.textContent = pick(['⭐','🌟','🎉','💛','✨','🎈','🌈']); s.style.left = Math.random()*100+'vw'; s.style.animationDelay = Math.random()*.8+'s'; c.appendChild(s); }
+  document.body.appendChild(c); setTimeout(()=>c.remove(), 3800);
+}
+
+/* ---------- Actions ---------- */
+const A = {
+  go, closeModal(){ UI.modal = null; render(); },
+  ob(step){ UI.ob.step = step; render(); if (step===1) setTimeout(()=>$('#nm')?.focus(), 50); },
+  obName(){ const v = ($('#nm')?.value||'').trim(); if (!v){ toast('Напиши своё имя 😊'); return; } UI.ob.name = v.slice(0,20); A.ob(2); },
+  obAge(a){ UI.ob.age = a; render(); },
+  obDone(level){
+    S = freshState();
+    S.child = {id:uid(), name:UI.ob.name, age:UI.ob.age, start_level:level, created_at:new Date().toISOString()};
+    const seed = (keys) => keys.forEach((k,i) => { const p = SRS.ensure(k); p.stage = 1; p.repetition_count = 1; p.last_seen = addDays(today(), -1); p.next_review = addDays(today(), i % 4); });
+    if (level==='some'){ seed(LETTER_KEYS().slice(0,10)); seed(NUMBER_KEYS().slice(0,5)); seed(['W:hello','W:apple']); }
+    if (level==='learned'){ seed(LETTER_KEYS()); seed(NUMBER_KEYS()); seed(wordOrder().slice(0,8)); }
+    Store.save(); UI.preview = null; Sfx.yay(); go('home');
+    Voice.ru(`Привет, ${S.child.name}! Сегодня нас ждёт маленькое приключение!`);
+  },
+  startLesson(kind){
+    let L = kind==='daily' ? restoreCurrent() : null;
+    if (!L || L.kind!==kind){ L = kind==='daily' && UI.preview && UI.preview.date===today() && !lessonDoneToday() ? UI.preview : buildLesson(kind); }
+    UI.lesson = L; UI.preview = null; S.current = L; Store.saveLocal();
+    enterStep(); UI.screen = 'lesson'; render(); window.scrollTo(0,0);
+    if (L.i===0 && L.first) Voice.ru('Привет! Послушай и повтори!').then(()=>Voice.item('W:hello'));
+    else speakStep();
+  },
+  pauseLesson(){ Store.saveLocal(); speechSynthesis?.cancel?.(); go('home'); },
+  next(){
+    const L = UI.lesson; L.i++; S.current = L; Store.saveLocal();
+    if (L.steps[L.i]?.t==='finish') completeLesson();
+    enterStep(); render(); window.scrollTo(0,0); speakStep();
+  },
+  hear(key, slow=false){ Sfx.tap(); Voice.item(key, slow); },
+  hearLetter(up){ const l = LETTERS.find(x=>x.up===up); Voice.say(l.say); },
+  hearRaw(t){ Voice.say(t); },
+  async mic(){
+    const p = UI.pr; if (!p || p.listening) return;
+    if (!Mic.supported){ p.manual = true; p.msg = 'Скажи слово вслух! Я слушаю 🐰 А потом нажми «Я сказал(а)!»'; render(); return; }
+    try { speechSynthesis.cancel(); } catch(e){}
+    p.listening = true; render();
+    const res = await Mic.listen();
+    if (UI.pr !== p) return;
+    p.listening = false;
+    if (res.unsupported || ['not-allowed','service-not-allowed','audio-capture','start'].includes(res.error)){
+      p.manual = true; p.msg = 'Микрофон сейчас не слушает — просто скажи слово вслух, я поверю! 😊'; render(); return;
+    }
+    const level = judgeSpeech(p.key, res.alts || []);
+    applyPron(p, level);
+  },
+  saidIt(){ const p = UI.pr; if (p) applyPron(p, 'manual'); },
+  choose(i){
+    const g = UI.game, r = g.r; if (r.solved) return;
+    const k = r.options[i];
+    if (k===r.target){
+      r.solved = true; touch(k, r.wrong.length>0); Sfx.yay(); g.msg = pick(POS); render();
+      Voice.item(k).then(()=>{}); setTimeout(()=>{ if (UI.game===g && g.r===r){ g.i++; nextRound(); } }, 1500);
+    } else {
+      if (!r.wrong.includes(k)) r.wrong.push(k);
+      r.wiggle = k; touch(r.target, true); Sfx.soft();
+      g.msg = r.wrong.length>=2 ? 'Давай вместе! Вот он ✨' : pick(RETRY);
+      render(); r.wiggle = null;
+      if (GAMES[g.id].listen) setTimeout(()=>Voice.item(r.target), 500);
+      else if (g.id==='count' || g.id==='findPicture') Voice.say(ITEMS[k].say);
+    }
+  },
+  tile(i){
+    const g = UI.game, r = g.r, word = ITEMS[r.target].en;
+    if (r.used.includes(i) || r.placed>=word.length) return;
+    if (r.tiles[i].c === word[r.placed]){
+      r.used.push(i); r.placed++; r.wrongTile = -1; Sfx.tap(); Voice.say(r.tiles[i].c.toUpperCase());
+      if (r.placed===word.length){ touch(r.target, r.misses>0); Sfx.yay(); g.msg = pick(POS); render(); setTimeout(()=>Voice.item(r.target), 400); setTimeout(()=>{ if (UI.game===g && g.r===r){ g.i++; nextRound(); } }, 2000); return; }
+      g.msg = 'Так! Дальше 👉';
+    } else { r.misses++; r.wrongTile = i; Sfx.soft(); g.msg = r.misses>=2 ? 'Подсказка появилась в клеточке ✨' : pick(RETRY); render(); r.wrongTile = -1; return; }
+    render();
+  },
+  mLeft(k){ const r = UI.game.r; if (r.done.includes(k)) return; r.sel = k; Sfx.tap(); Voice.item(k); render(); },
+  mRight(k){
+    const g = UI.game, r = g.r; if (r.done.includes(k)) return;
+    if (!r.sel){ g.msg = 'Сначала нажми на слово слева 👈'; render(); return; }
+    if (r.sel===k){ r.done.push(k); touch(k, false); r.sel = null; Sfx.yay(); g.msg = pick(POS); Voice.item(k); render();
+      if (r.done.length===r.keys.length) setTimeout(()=>{ if (UI.game===g){ g.i++; nextRound(); } }, 1500);
+    } else { touch(r.sel, true); r.wrong = k; Sfx.soft(); g.msg = pick(RETRY); render(); r.wrong = null; }
+  },
+  gameNext(){ const g = UI.game; g.i++; nextRound(); },
+  play(id){ UI.params = {play:true}; UI.screen = 'games'; const keys = Object.keys(S.progress).length ? Object.keys(S.progress) : starterKeys(); startGame(id, keys, {embedded:false}); window.scrollTo(0,0); },
+  tab(t){ UI.wordsTab = t; render(); },
+  region(id){ UI.wordsTab = 'W'; go('words', {region:id}); },
+  card(key){
+    UI.modal = () => learnCard(key) + `<div class="row"><button class="btn" style="flex:1" onclick="A.speakWord('${key}')">🎤 Сказать</button><button class="btn soft" style="flex:1" onclick="A.closeModal()">Закрыть</button></div>`;
+    render(); Voice.item(key);
+  },
+  speakWord(key){ UI.pr = newPr(key); UI.modal = null; go('speak', {key}); setTimeout(()=>Voice.item(key), 300); },
+  speakNext(){ const list = speakList(); const cur = list.indexOf(UI.params.key); A.speakWord(list[(cur+1) % list.length]); },
+  gateCheck(){ const v = +($('#gate')?.value||0); if (v === UI.gate.a*UI.gate.b){ UI.gate = null; go('parent'); } else { toast('Попробуйте ещё раз'); UI.gate = null; render(); } },
+  set(k, v){ S.settings[k] = v; Store.save(); UI.preview = null; toast('Сохранено ✓'); },
+  setAge(v){ if (S.child){ S.child.age = Math.max(3, Math.min(12, +v||5)); Store.save(); toast('Сохранено ✓'); } },
+  async notifyPerm(){ if (!('Notification' in window)) return toast('Браузер не поддерживает уведомления'); const r = await Notification.requestPermission(); toast(r==='granted'?'Уведомления разрешены ✓':'Уведомления не разрешены'); },
+  async restore(){
+    const code = ($('#restore')?.value||'').trim(); if (!code) return toast('Вставьте код ребёнка');
+    try { await Cloud.restore(code); UI.lesson = null; UI.preview = null; toast('Прогресс восстановлен ✓'); go('parent'); }
+    catch(e){ toast('Не удалось восстановить: '+(e.message||'нет связи')); }
+  },
+  reset(){ if (!confirm('Удалить профиль и прогресс на этом устройстве?')) return; localStorage.removeItem(STORE_KEY); S = freshState(); UI.lesson = null; UI.preview = null; UI.ob = {step:0, name:'', age:5}; go('onboarding'); },
+};
+
+function applyPron(p, level){
+  p.attempts++; p.manual = false;
+  if (level !== 'quiet') SRS.pron(p.key, level==='manual' ? 'close' : level);
+  if (UI.lesson && UI.screen==='lesson') UI.lesson.touched[p.key] = !!UI.lesson.touched[p.key];
+  if (UI.game && UI.game.r && UI.game.r.kind==='repeat') touch(p.key, false);
+  const msgs = {
+    great:['Отлично! 🌟 Получается всё лучше!','Ура! Здорово сказал(а)! ✨','Супер! Давай ещё раз вместе!'],
+    close:['Уже почти! Давай ещё раз вместе! 💛','Получается! Послушай и скажи ещё разок 👂'],
+    again:['Давай послушаем ещё раз 👂','Попробуем ещё раз! У тебя получится!','Теперь вместе!'],
+    quiet:['Я не расслышал 🙉 Скажи чуть громче!'],
+    manual:['Молодец, что пробуешь! 🌟 Давай ещё раз вместе!'],
+  };
+  p.msg = pick(msgs[level]);
+  if (p.attempts===1 && UI.lesson && UI.lesson.steps[UI.lesson.i]?.t==='hello') p.msg = 'Отлично! Давай ещё раз вместе! 👋';
+  level==='great'||level==='manual' ? Sfx.yay() : Sfx.soft();
+  Store.save(); render();
+  if (level!=='great') setTimeout(()=>Voice.item(p.key), 700);
+}
+function enterStep(){
+  const L = UI.lesson, st = L.steps[L.i]; if (!st) return;
+  UI.game = null;
+  if (st.t==='hello' || st.t==='pronounce') UI.pr = newPr(st.key);
+  if (st.t==='learn'){ L.touched[st.key] = !!L.touched[st.key]; }
+  if (st.t==='game') startGame(st.g, st.keys, {embedded:true, onDone:()=>A.next()});
+}
+function speakStep(){
+  const L = UI.lesson, st = L?.steps[L.i]; if (!st) return;
+  if (st.t==='learn' || st.t==='pronounce') setTimeout(()=>Voice.item(st.key), 350);
+  if (st.t==='finish'){ confetti(); Sfx.sparkle(); Voice.ru(L.first ? 'Наше первое приключение закончено! Завтра продолжим!' : 'Приключение закончено! Ты молодец!'); }
+}
+function completeLesson(){
+  const L = UI.lesson; if (L.completed) return;
+  L.completed = true;
+  for (const k of new Set([...L.new_items, ...L.review_items, ...Object.keys(L.touched)])) if (ITEMS[k]) SRS.practice(k, !!L.touched[k]);
+  L.seconds = Math.round((Date.now() - L.started)/1000);
+  dayStat().lessons++;
+  if (L.kind==='daily' || S.rewards.stickers.length < 3){
+    const next = STICKERS[S.rewards.stickers.length % STICKERS.length]; S.rewards.stickers.push(next); L.reward = next;
+    const cnt = S.rewards.stickers.length;
+    if (cnt % 3 === 1 && S.rewards.room.length < ROOM_ITEMS.length){ L.roomItem = ROOM_ITEMS[S.rewards.room.length]; S.rewards.room.push(L.roomItem); }
+  }
+  S.lessons.push({id:L.id, date:L.date, kind:L.kind, new_items:L.new_items, review_items:L.review_items, completed:true, seconds:L.seconds});
+  S.current = null;
+  Store.save();
+}
+
+/* ---------- Время занятий и напоминания ---------- */
+setInterval(() => {
+  if (document.hidden || !S.child) return;
+  if (['lesson','games','speak','words'].includes(UI.screen)){ dayStat().sec += 10; Store.saveLocal(); }
+}, 10000);
+setInterval(() => {
+  if (!S.child) return;
+  const now = new Date(), hm = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  if (hm===S.settings.reminder && S.notified!==today() && !lessonDoneToday()){
+    S.notified = today(); Store.saveLocal();
+    const text = `${S.child.name}, Хоппи ждёт тебя в новом приключении! 🐰`;
+    toast(text);
+    try { if ('Notification' in window && Notification.permission==='granted') new Notification('Хоппи', {body:text}); } catch(e){}
+  }
+}, 30000);
+
+/* ---------- Запуск ---------- */
+buildItems();
+Store.load();
+Voice.init();
+Cloud.init();
+if (!S.child) UI.screen = 'onboarding';
+document.addEventListener('keydown', e => { if (e.key==='Enter'){ if (UI.screen==='onboarding' && UI.ob.step===1) A.obName(); if (UI.screen==='parentGate') A.gateCheck(); } });
+render();
+Cloud.loadContent();
+if (S.child) Cloud.schedule();
+</script>
+</body>
+</html>
