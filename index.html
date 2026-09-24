@@ -63,6 +63,9 @@ input,select{font-family:inherit;font-weight:700;font-size:18px;color:var(--ink)
 .tile .ic{font-size:50px;line-height:1}
 .tile:active{transform:translateY(3px)}
 .tile.locked{opacity:.55}
+.langs{display:flex;gap:10px;justify-content:center}
+.langs button{padding:10px 16px;border-radius:16px;background:#fff;box-shadow:var(--shadow);font-size:18px}
+.langs button.on{background:var(--blue);color:#fff}
 .parent-link{margin:22px auto 0;display:block;font-size:16px;color:var(--ink2);background:rgba(255,255,255,.7);padding:10px 18px;border-radius:16px}
 
 .plan{background:rgba(255,255,255,.75);border-radius:22px;padding:12px 16px;margin-top:16px;font-size:17px}
@@ -134,7 +137,7 @@ input,select{font-family:inherit;font-weight:700;font-size:18px;color:var(--ink)
 
 /* words grid */
 .tabs{display:flex;gap:10px;margin-bottom:14px}
-.tab{flex:1;min-height:64px;border-radius:20px;background:#fff;box-shadow:var(--shadow);font-size:20px}
+.tab{flex:1;min-width:0;min-height:64px;padding:6px 4px;border-radius:20px;background:#fff;box-shadow:var(--shadow);font-size:clamp(15px,4.6vw,20px)}
 .tab.on{background:var(--blue);color:#fff}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .grid.g4{grid-template-columns:repeat(4,1fr)}
@@ -234,31 +237,33 @@ const TABLE = 'app_data';
    learning_progress — {child_id, items:[{item_id, state, first_seen, last_seen, next_review, repetition_count, pronunciation_attempts, ...}]}
    daily_lesson      — {lesson_id, child_id, date, new_items, review_items, completed, seconds}
    word / letter / number / category — дополнительный контент, который можно добавить в базу без изменения кода:
-     word:     {id, en, ru, cat, emoji, level, ipa, hint}
-     letter:   {up, low, name, sound, word, emoji, say}
+     word:     {id, en, ru, kk, cat, emoji, level, ipa, hint}
+     letter:   {up, low, name, sound, snd, word, emoji, say}
      number:   {n, en, emoji}
-     category: {id, ru, icon, region}                                     */
+     category: {id, ru, kk, icon, region}
+   Язык интерфейса: русский (ru) или казахский (kk) — все тексты в словаре I18N.                                     */
 
 /* ---------- 2. CONTENT ---------- */
 const REGIONS = [
-  {id:'home',   ru:'Дом',    icon:'🏠', color:'#FFE3C4'},
-  {id:'forest', ru:'Лес',    icon:'🌳', color:'#DDF5E2'},
-  {id:'farm',   ru:'Ферма',  icon:'🐾', color:'#FFF1C9'},
-  {id:'sea',    ru:'Море',   icon:'🌊', color:'#DDEEFF'},
-  {id:'space',  ru:'Космос', icon:'🚀', color:'#E9E1FF'},
+  {id:'home',   ru:'Дом', kk:'Үй',    kk:'Үй',     icon:'🏠', color:'#FFE3C4'},
+  {id:'forest', ru:'Лес',    kk:'Орман',  icon:'🌳', color:'#DDF5E2'},
+  {id:'farm',   ru:'Ферма',  kk:'Ферма',  icon:'🐾', color:'#FFF1C9'},
+  {id:'sea',    ru:'Море',   kk:'Теңіз',  icon:'🌊', color:'#DDEEFF'},
+  {id:'space',  ru:'Космос', kk:'Ғарыш',  icon:'🚀', color:'#E9E1FF'},
 ];
 const CATEGORIES = [
-  {id:'greetings', ru:'Привет',   icon:'👋', region:'home'},
-  {id:'family',    ru:'Семья',    icon:'👨‍👩‍👧', region:'home'},
-  {id:'toys',      ru:'Игрушки',  icon:'🧸', region:'home'},
+  {id:'greetings', ru:'Привет', kk:'Сәлемдесу',   icon:'👋', region:'home'},
+  {id:'family',    ru:'Семья', kk:'Отбасы',    icon:'👨‍👩‍👧', region:'home'},
+  {id:'toys',      ru:'Игрушки', kk:'Ойыншықтар',  icon:'🧸', region:'home'},
   {id:'home',      ru:'Дом',      icon:'🏠', region:'home'},
-  {id:'nature',    ru:'Природа',  icon:'🌳', region:'forest'},
-  {id:'colors',    ru:'Цвета',    icon:'🎨', region:'forest'},
-  {id:'animals',   ru:'Животные', icon:'🐾', region:'farm'},
-  {id:'food',      ru:'Еда',      icon:'🍎', region:'farm'},
-  {id:'body',      ru:'Тело',     icon:'🙂', region:'sea'},
+  {id:'nature',    ru:'Природа', kk:'Табиғат',  icon:'🌳', region:'forest'},
+  {id:'colors',    ru:'Цвета', kk:'Түстер',    icon:'🎨', region:'forest'},
+  {id:'animals',   ru:'Животные', kk:'Жануарлар', icon:'🐾', region:'farm'},
+  {id:'food',      ru:'Еда', kk:'Тағам',      icon:'🍎', region:'farm'},
+  {id:'body',      ru:'Тело', kk:'Дене',     icon:'🙂', region:'sea'},
 ];
-const W = (id, ru, cat, emoji, ipa, hint, level=1) => ({id, en:id, ru, cat, emoji, ipa, hint, level});
+const W = (id, ru, cat, emoji, ipa, hint, level=1) => ({id, en:id, ru, kk:KK_WORDS[id]||ru, cat, emoji, ipa, hint, level});
+const KK_WORDS = {'hello':'сәлем','mother':'ана','father':'әке','sister':'әпке','brother':'аға','baby':'сәби','ball':'доп','doll':'қуыршақ','car':'көлік','teddy bear':'ойыншық аю','house':'үй','room':'бөлме','door':'есік','bed':'төсек','chair':'орындық','sun':'күн','moon':'ай','star':'жұлдыз','tree':'ағаш','flower':'гүл','red':'қызыл','blue':'көк','green':'жасыл','yellow':'сары','pink':'қызғылт','cat':'мысық','dog':'ит','bird':'құс','fish':'балық','elephant':'піл','bear':'аю','apple':'алма','banana':'банан','milk':'сүт','bread':'нан','water':'су','head':'бас','hand':'қол','eye':'көз','nose':'мұрын','mouth':'ауыз'};
 const WORDS = [
   W('hello','привет','greetings','👋','/həˈləʊ/','хэлоу'),
   W('mother','мама','family','👩','/ˈmʌðə/','мазэ'),
@@ -303,33 +308,33 @@ const WORDS = [
   W('mouth','рот','body','👄','/maʊθ/','маус'),
 ];
 const LETTERS = [
-  ['A','эй','[æ] — как «э» в apple','apple','🍎','ay'],
-  ['B','би','[b] — как «б»','bear','🐻','bee'],
-  ['C','си','[k] — как «к»','cat','🐱','see'],
-  ['D','ди','[d] — как «д»','dog','🐶','dee'],
-  ['E','и','[e] — как «э»','egg','🥚','ee'],
-  ['F','эф','[f] — как «ф»','fish','🐟','ef'],
-  ['G','джи','[g] — как «г»','grapes','🍇','jee'],
-  ['H','эйч','[h] — лёгкий выдох «х»','house','🏠','aitch'],
-  ['I','ай','[ɪ] — короткое «и»','insect','🐞','eye'],
-  ['J','джей','[dʒ] — как «дж»','juice','🧃','jay'],
-  ['K','кей','[k] — как «к»','kite','🪁','kay'],
-  ['L','эл','[l] — как «л»','lion','🦁','el'],
-  ['M','эм','[m] — как «м»','moon','🌙','em'],
-  ['N','эн','[n] — как «н»','nose','👃','en'],
-  ['O','оу','[ɒ] — как «о»','octopus','🐙','oh'],
-  ['P','пи','[p] — как «п»','pig','🐷','pee'],
-  ['Q','кью','[kw] — как «кв»','queen','👸','cue'],
-  ['R','а','[r] — мягкое «р»','rabbit','🐰','ar'],
-  ['S','эс','[s] — как «с»','sun','☀️','ess'],
-  ['T','ти','[t] — как «т»','tree','🌳','tee'],
-  ['U','ю','[ʌ] — как «а»','umbrella','☂️','you'],
-  ['V','ви','[v] — как «в»','van','🚐','vee'],
-  ['W','дабл-ю','[w] — губки трубочкой «уа»','water','💧','double you'],
-  ['X','экс','[ks] — как «кс»','box','📦','ex'],
-  ['Y','уай','[j] — как «й»','yo-yo','🪀','why'],
-  ['Z','зед / зи','[z] — как «з»','zebra','🦓','zed'],
-].map(([up,name,sound,word,emoji,say]) => ({up, low:up.toLowerCase(), name, sound, word, emoji, say}));
+  ['A','эй','[æ]','э','apple','🍎','ay'],
+  ['B','би','[b]','б','bear','🐻','bee'],
+  ['C','си','[k]','к','cat','🐱','see'],
+  ['D','ди','[d]','д','dog','🐶','dee'],
+  ['E','и','[e]','э','egg','🥚','ee'],
+  ['F','эф','[f]','ф','fish','🐟','ef'],
+  ['G','джи','[g]','г','grapes','🍇','jee'],
+  ['H','эйч','[h]','х','house','🏠','aitch'],
+  ['I','ай','[ɪ]','и','insect','🐞','eye'],
+  ['J','джей','[dʒ]','дж','juice','🧃','jay'],
+  ['K','кей','[k]','к','kite','🪁','kay'],
+  ['L','эл','[l]','л','lion','🦁','el'],
+  ['M','эм','[m]','м','moon','🌙','em'],
+  ['N','эн','[n]','н','nose','👃','en'],
+  ['O','оу','[ɒ]','о','octopus','🐙','oh'],
+  ['P','пи','[p]','п','pig','🐷','pee'],
+  ['Q','кью','[kw]','кв','queen','👸','cue'],
+  ['R','а','[r]','р','rabbit','🐰','ar'],
+  ['S','эс','[s]','с','sun','☀️','ess'],
+  ['T','ти','[t]','т','tree','🌳','tee'],
+  ['U','ю','[ʌ]','а','umbrella','☂️','you'],
+  ['V','ви','[v]','в','van','🚐','vee'],
+  ['W','дабл-ю','[w]','уа','water','💧','double you'],
+  ['X','экс','[ks]','кс','box','📦','ex'],
+  ['Y','уай','[j]','й','yo-yo','🪀','why'],
+  ['Z','зед / зи','[z]','з','zebra','🦓','zed'],
+].map(([up,name,ipa,snd,word,emoji,say]) => ({up, low:up.toLowerCase(), name, ipa, snd, word, emoji, say}));
 const NUMBERS = [
   [1,'one','🍎'],[2,'two','⭐'],[3,'three','🐟'],[4,'four','🎈'],[5,'five','🌸'],
   [6,'six','🍓'],[7,'seven','🐞'],[8,'eight','🍪'],[9,'nine','🚗'],[10,'ten','🫧'],
@@ -365,9 +370,145 @@ const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+
 const today = () => fmt(new Date());
 const addDays = (ds, n) => { const [y,m,d] = ds.split('-').map(Number); return fmt(new Date(y, m-1, d+n)); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const POS = ['Отлично, продолжаем!','Ура! 🌟','Здорово!','Молодец!','Супер! ✨','Так держать!','Получается всё лучше!'];
-const RETRY = ['Попробуем ещё раз!','Давай послушаем ещё раз 👂','У тебя получится!','Давай ещё разок!'];
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>t.classList.remove('show'), 2600); }
+
+/* ---------- Языки интерфейса: ru — русский, kk — қазақша ----------
+   Добавить язык = добавить ещё один объект с теми же ключами. */
+const I18N = {
+  ru:{
+    appName:'Хоппи', docTitle:'Хоппи — английский для малышей',
+    pos:['Отлично, продолжаем!','Ура! 🌟','Здорово!','Молодец!','Супер! ✨','Так держать!','Получается всё лучше!'],
+    retry:['Попробуем ещё раз!','Давай послушаем ещё раз 👂','У тебя получится!','Давай ещё разок!'],
+    pr_great:['Отлично! 🌟 Получается всё лучше!','Ура! Здорово сказал(а)! ✨','Супер! Давай ещё раз вместе!'],
+    pr_close:['Уже почти! Давай ещё раз вместе! 💛','Получается! Послушай и скажи ещё разок 👂'],
+    pr_again:['Давай послушаем ещё раз 👂','Попробуем ещё раз! У тебя получится!','Теперь вместе!'],
+    pr_quiet:['Я не расслышал 🙉 Скажи чуть громче!'],
+    pr_manual:['Молодец, что пробуешь! 🌟 Давай ещё раз вместе!'],
+    helloFirst:'Отлично! Давай ещё раз вместе! 👋',
+    hi:'Привет! 👋', intro:'Я — зайчик <b>Хоппи</b>! Давай начнём наше английское приключение!', go:'Поехали! ▶',
+    askName:'Как тебя зовут? 😊', namePh:'Имя', nameNote:'Достаточно имени — больше ничего не нужно', next:'Дальше ▶',
+    askAge:'{name}, сколько тебе лет?', askLevel:'Ты уже знаешь английские буквы?',
+    lvlZero:'Я начинаю с нуля', lvlSome:'Я немного знаю', lvlLearned:'Я уже немного учился',
+    lvlNote:'Любой ответ подходит — так Хоппи поймёт, с чего начать', enterName:'Напиши своё имя 😊',
+    helloName:'Привет, {name}! 👋', greetToday:'Сегодня нас ждёт маленькое приключение 🌈',
+    greetDone:'Сегодня мы немного выучили английский! 🌱 Завтра продолжим.',
+    playMore:'🎈 Ещё немного поиграем', start:'🌟 НАЧАТЬ', continue:'▶ ПРОДОЛЖИМ', today:'Сегодня:',
+    myWorld:'Мой мир', myWords:'Мои слова', games:'Игры', speak:'Произношение', parents:'⚙️ Родителям', switchLang:'🇰🇿 Қазақша',
+    p_letter:'Новая буква', p_number:'Новое число', p_word:'Новое слово', p_review:'Повторяем', p_say:'Произносим', p_game:'Игра',
+    g_findPicture:'Найди картинку', g_listenChoose:'Услышь и выбери', g_findLetter:'Найди букву', g_count:'Сосчитай',
+    g_repeat:'Повтори за мной', g_build:'Собери слово', g_match:'Соедини',
+    h_findPic:'Найди картинку 👇', h_listen:'Послушай и найди 👇', h_letter:'Какую букву я назвал? 👇', h_count:'Сколько здесь? 👇',
+    b_again:'ещё раз', b_letter:'буква', b_word:'слово', b_slow:'медленно', b_listen:'слушать', b_say:'Сказать',
+    back:'Назад', pause:'Пауза', sayWithHoppy:'Скажи вместе с Хоппи',
+    gamesIntro:'Выбирай любую игру! Ошибаться можно — так мы и учимся 💛', otherWord:'Другое слово ➡️',
+    speakIntro:'Выбери слово — послушаем и скажем вместе!',
+    t_letters:'Буквы', t_numbers:'Числа', t_words:'Слова', numsLater:'Числа 11–20 откроются чуть позже',
+    wordsEmpty:'Здесь появятся слова, которые мы узнаем вместе! 🌟', wordsLater:'Новые слова появятся в следующих приключениях',
+    plantGrow:'Наш росток растёт с каждым занятием! 🌱', plantSeed:'Посадим семечко на первом занятии! 🌰',
+    places:'Места', soon:'Это место скоро откроется! ✨', room:'Комната Хоппи', roomEmpty:'Здесь появятся вещи для Хоппи', stickers:'Мои наклейки',
+    adults:'Для взрослых', gateQ:'Чтобы войти, решите пример:', answer:'Ответ', enter:'Войти', gateRetry:'Попробуйте ещё раз',
+    parentsTitle:'Родителям', ageYears:'{n} лет', st_days:'дней с английским', st_min:'минут занятий', st_words:'знакомых слов', st_ln:'букв / чисел',
+    last7:'Минуты за последние 7 дней', topics:'Темы', ofTotal:'{n} из {t}', topicsEmpty:'Темы появятся после первого занятия',
+    metWords:'Слова, с которыми познакомились', none:'Пока нет', often:'Чаще всего повторялись', practice:'Стоит потренировать ещё',
+    practiceNote:'Хоппи сам покажет эти слова чаще. Можно послушать их вместе в разделе «Произношение».', ownPace:'Всё идёт своим темпом 💛',
+    settings:'Настройки', s_age:'Возраст ребёнка', s_duration:'Длительность занятия', minutes:'{n} минут', s_accent:'Вариант английского',
+    us:'🇺🇸 Американский', gb:'🇬🇧 Британский', s_sfx:'Звуки в играх', on:'Включены', off:'Выключены',
+    s_voice:'Голосовые подсказки на языке интерфейса', s_volume:'Громкость', s_reminder:'Время напоминания', s_lang:'Язык интерфейса',
+    reminderNote:'Напоминание приходит, пока приложение открыто в браузере', allow:'🔔 Разрешить',
+    privacy:'Данные и безопасность',
+    privacyText:'Храним только имя, возраст и прогресс обучения. Нет чата, рекламы, публичных профилей и рейтингов. Микрофон включается только по нажатию 🎤 для тренировки произношения; запись не сохраняется.',
+    status:'Статус', cloud_ok:'✅ Синхронизировано с облаком', cloud_local:'💾 Сохраняется на устройстве (облако недоступно)',
+    cloud_connecting:'⏳ Подключение к облаку…', cloud_off:'💾 Сохраняется на устройстве',
+    childCode:'Код ребёнка (для другого устройства)', pasteCode:'Вставьте код', restore:'Восстановить', reset:'Начать заново',
+    saved:'Сохранено ✓', noNotif:'Браузер не поддерживает уведомления', notifOk:'Уведомления разрешены ✓', notifNo:'Уведомления не разрешены',
+    needCode:'Вставьте код ребёнка', restored:'Прогресс восстановлен ✓', restoreFail:'Не удалось восстановить: ', noConn:'нет связи', noProfile:'профиль не найден',
+    resetConfirm:'Удалить профиль и прогресс на этом устройстве?',
+    letterName:'Буква называется «{n}»', letterSound:'Звук {ipa} — как «{s}»',
+    helloMsg:'Послушай: <b>Hello!</b> А теперь скажи <b>Hello!</b> 🎤', sayWithMe:'Послушай и скажи вместе со мной! 🎤',
+    listening:'Слушаю… говори! 👂', pressSay:'Нажми и скажи', saidIt:'✅ Я сказал(а)!', skip:'Пропустить ➡️',
+    goOn:'Отлично, продолжаем!', playAgain:'🔁 Ещё раз', otherGames:'🎮 Другие игры', withYou:'Я с тобой! 💛',
+    matchHint:'Нажми на слово, а потом на картинку',
+    firstDone:'Наше первое приключение закончено!', done:'Приключение закончено!', played:'Здорово поиграли!',
+    tomorrow:'Завтра продолжим! 🐰', wellDone:'Ты молодец! 💛', newSticker:'Новая наклейка!', gift:'И подарок для комнаты Хоппи:',
+    plantBigger:'Росток стал чуть больше! 🌱', home:'🏠 Домой', close:'Закрыть',
+    noMic:'Скажи слово вслух! Я слушаю 🐰 А потом нажми «Я сказал(а)!»', micOff:'Микрофон сейчас не слушает — просто скажи слово вслух, я поверю! 😊',
+    together:'Давай вместе! Вот он ✨', soFar:'Так! Дальше 👉', hintSlot:'Подсказка появилась в клеточке ✨', leftFirst:'Сначала нажми на слово слева 👈',
+    v_hello:'Привет, {name}! Сегодня нас ждёт маленькое приключение!', v_listen:'Привет! Послушай и повтори!',
+    v_firstDone:'Наше первое приключение закончено! Завтра продолжим!', v_done:'Приключение закончено! Ты молодец!',
+    reminderText:'{name}, Хоппи ждёт тебя в новом приключении! 🐰',
+  },
+  kk:{
+    appName:'Хоппи', docTitle:'Хоппи — балаларға арналған ағылшын тілі',
+    pos:['Керемет, жалғастырамыз!','Ура! 🌟','Тамаша!','Жарайсың!','Супер! ✨','Осылай жалғастыр!','Барған сайын жақсы шығып жатыр!'],
+    retry:['Тағы байқап көрейік!','Тағы бір рет тыңдайық 👂','Сенің қолыңнан келеді!','Тағы бір рет!'],
+    pr_great:['Керемет! 🌟 Барған сайын жақсы шығып жатыр!','Ура! Тамаша айттың! ✨','Супер! Тағы бірге айтайық!'],
+    pr_close:['Сәл ғана қалды! Тағы бірге айтайық! 💛','Шығып жатыр! Тыңда да, тағы бір рет айт 👂'],
+    pr_again:['Тағы бір рет тыңдайық 👂','Тағы байқап көрейік! Сенің қолыңнан келеді!','Енді бірге!'],
+    pr_quiet:['Мен естімей қалдым 🙉 Сәл қаттырақ айтшы!'],
+    pr_manual:['Талпынғаның үшін жарайсың! 🌟 Тағы бірге айтайық!'],
+    helloFirst:'Керемет! Тағы бірге айтайық! 👋',
+    hi:'Сәлем! 👋', intro:'Мен — <b>Хоппи</b> қоянмын! Ағылшын тіліне саяхатымызды бастайық!', go:'Кеттік! ▶',
+    askName:'Сенің атың кім? 😊', namePh:'Атың', nameNote:'Тек атың жеткілікті — басқа ештеңе керек емес', next:'Әрі қарай ▶',
+    askAge:'{name}, сен нешедесің?', askLevel:'Сен ағылшын әріптерін білесің бе?',
+    lvlZero:'Мен енді бастаймын', lvlSome:'Аздап білемін', lvlLearned:'Бұрын аздап оқығанмын',
+    lvlNote:'Кез келген жауап дұрыс — Хоппи қайдан бастау керегін осылай түсінеді', enterName:'Атыңды жазшы 😊',
+    helloName:'Сәлем, {name}! 👋', greetToday:'Бүгін бізді кішкентай саяхат күтіп тұр 🌈',
+    greetDone:'Бүгін біз ағылшын тілін аздап үйрендік! 🌱 Ертең жалғастырамыз.',
+    playMore:'🎈 Тағы аздап ойнайық', start:'🌟 БАСТАУ', continue:'▶ ЖАЛҒАСТЫРАЙЫҚ', today:'Бүгін:',
+    myWorld:'Менің әлемім', myWords:'Менің сөздерім', games:'Ойындар', speak:'Айтылым', parents:'⚙️ Ата-аналарға', switchLang:'🇷🇺 Русский',
+    p_letter:'Жаңа әріп', p_number:'Жаңа сан', p_word:'Жаңа сөз', p_review:'Қайталаймыз', p_say:'Айтамыз', p_game:'Ойын',
+    g_findPicture:'Суретті тап', g_listenChoose:'Тыңда да таңда', g_findLetter:'Әріпті тап', g_count:'Санап көр',
+    g_repeat:'Менен кейін қайтала', g_build:'Сөзді құра', g_match:'Сәйкестендір',
+    h_findPic:'Суретті тап 👇', h_listen:'Тыңда да тап 👇', h_letter:'Мен қай әріпті айттым? 👇', h_count:'Мұнда нешеу? 👇',
+    b_again:'тағы', b_letter:'әріп', b_word:'сөз', b_slow:'баяу', b_listen:'тыңдау', b_say:'Айту',
+    back:'Артқа', pause:'Кідіріс', sayWithHoppy:'Хоппимен бірге айт',
+    gamesIntro:'Кез келген ойынды таңда! Қателесуге болады — біз осылай үйренеміз 💛', otherWord:'Басқа сөз ➡️',
+    speakIntro:'Сөзді таңда — бірге тыңдап, бірге айтайық!',
+    t_letters:'Әріптер', t_numbers:'Сандар', t_words:'Сөздер', numsLater:'11–20 сандары кейінірек ашылады',
+    wordsEmpty:'Мұнда бірге үйренген сөздеріміз пайда болады! 🌟', wordsLater:'Жаңа сөздер келесі саяхаттарда пайда болады',
+    plantGrow:'Өскініміз әр сабақ сайын өсіп келеді! 🌱', plantSeed:'Алғашқы сабақта тұқым отырғызамыз! 🌰',
+    places:'Жерлер', soon:'Бұл жер жақында ашылады! ✨', room:'Хоппидің бөлмесі', roomEmpty:'Мұнда Хоппиге арналған заттар пайда болады', stickers:'Менің жапсырмаларым',
+    adults:'Үлкендерге арналған', gateQ:'Кіру үшін мысалды шешіңіз:', answer:'Жауап', enter:'Кіру', gateRetry:'Қайта көріңіз',
+    parentsTitle:'Ата-аналарға', ageYears:'{n} жаста', st_days:'ағылшынмен өткен күн', st_min:'сабақ минуты', st_words:'таныс сөз', st_ln:'әріп / сан',
+    last7:'Соңғы 7 күндегі минуттар', topics:'Тақырыптар', ofTotal:'{t} ішінен {n}', topicsEmpty:'Тақырыптар алғашқы сабақтан кейін пайда болады',
+    metWords:'Танысқан сөздер', none:'Әзірге жоқ', often:'Жиі қайталанғандар', practice:'Тағы жаттығуға тұрарлық',
+    practiceNote:'Хоппи бұл сөздерді жиірек көрсетеді. Оларды «Айтылым» бөлімінде бірге тыңдауға болады.', ownPace:'Бәрі өз қарқынымен жүріп жатыр 💛',
+    settings:'Баптаулар', s_age:'Баланың жасы', s_duration:'Сабақ ұзақтығы', minutes:'{n} минут', s_accent:'Ағылшын тілінің нұсқасы',
+    us:'🇺🇸 Америкалық', gb:'🇬🇧 Британдық', s_sfx:'Ойындағы дыбыстар', on:'Қосулы', off:'Өшірулі',
+    s_voice:'Интерфейс тіліндегі дауыстық кеңестер', s_volume:'Дыбыс деңгейі', s_reminder:'Еске салу уақыты', s_lang:'Интерфейс тілі',
+    reminderNote:'Еске салу қолданба браузерде ашық тұрғанда келеді', allow:'🔔 Рұқсат беру',
+    privacy:'Деректер және қауіпсіздік',
+    privacyText:'Тек баланың атын, жасын және оқу барысын сақтаймыз. Чат, жарнама, ашық профильдер мен рейтингтер жоқ. Микрофон тек 🎤 батырмасын басқанда айтылымды жаттықтыру үшін қосылады; жазба сақталмайды.',
+    status:'Күйі', cloud_ok:'✅ Бұлтпен синхрондалды', cloud_local:'💾 Құрылғыда сақталады (бұлт қолжетімсіз)',
+    cloud_connecting:'⏳ Бұлтқа қосылуда…', cloud_off:'💾 Құрылғыда сақталады',
+    childCode:'Бала коды (басқа құрылғы үшін)', pasteCode:'Кодты қойыңыз', restore:'Қалпына келтіру', reset:'Басынан бастау',
+    saved:'Сақталды ✓', noNotif:'Браузер хабарландыруларды қолдамайды', notifOk:'Хабарландыруларға рұқсат берілді ✓', notifNo:'Хабарландыруларға рұқсат берілмеді',
+    needCode:'Бала кодын қойыңыз', restored:'Оқу барысы қалпына келтірілді ✓', restoreFail:'Қалпына келтіру мүмкін болмады: ', noConn:'байланыс жоқ', noProfile:'профиль табылмады',
+    resetConfirm:'Осы құрылғыдағы профиль мен оқу барысын жою керек пе?',
+    letterName:'Әріптің аты — «{n}»', letterSound:'Дыбысы {ipa} — «{s}» сияқты',
+    helloMsg:'Тыңда: <b>Hello!</b> Енді өзің айт: <b>Hello!</b> 🎤', sayWithMe:'Тыңда да, менімен бірге айт! 🎤',
+    listening:'Тыңдап тұрмын… айт! 👂', pressSay:'Бас та, айт', saidIt:'✅ Мен айттым!', skip:'Өткізіп жіберу ➡️',
+    goOn:'Керемет, жалғастырамыз!', playAgain:'🔁 Тағы бір рет', otherGames:'🎮 Басқа ойындар', withYou:'Мен сенімен біргемін! 💛',
+    matchHint:'Алдымен сөзді, сосын суретті бас',
+    firstDone:'Алғашқы саяхатымыз аяқталды!', done:'Саяхат аяқталды!', played:'Керемет ойнадық!',
+    tomorrow:'Ертең жалғастырамыз! 🐰', wellDone:'Сен жарайсың! 💛', newSticker:'Жаңа жапсырма!', gift:'Хоппидің бөлмесіне сыйлық:',
+    plantBigger:'Өскін сәл үлкейді! 🌱', home:'🏠 Үйге', close:'Жабу',
+    noMic:'Сөзді дауыстап айт! Мен тыңдап тұрмын 🐰 Сосын «Мен айттым!» батырмасын бас', micOff:'Микрофон қазір тыңдамай тұр — сөзді дауыстап айта бер, мен сенемін! 😊',
+    together:'Бірге табайық! Міне, ол ✨', soFar:'Дұрыс! Әрі қарай 👉', hintSlot:'Ұяшықта көмек пайда болды ✨', leftFirst:'Алдымен сол жақтағы сөзді бас 👈',
+    v_hello:'Сәлем, {name}! Бүгін бізді кішкентай саяхат күтіп тұр!', v_listen:'Сәлем! Тыңда да, қайтала!',
+    v_firstDone:'Алғашқы саяхатымыз аяқталды! Ертең жалғастырамыз!', v_done:'Саяхат аяқталды! Сен жарайсың!',
+    reminderText:'{name}, Хоппи сені жаңа саяхатқа күтіп тұр! 🐰',
+  },
+};
+const lang = () => (S.settings.ui_lang === 'kk' ? 'kk' : 'ru');
+function tr(key, vars={}){
+  let v = I18N[lang()][key] ?? I18N.ru[key] ?? key;
+  if (Array.isArray(v)) v = pick(v);
+  return v.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? '');
+}
+const nm = o => (lang()==='kk' ? (o.kk || o.ru) : o.ru);            // название категории/места
+const trWord = it => (it.type==='W' ? (lang()==='kk' ? (it.w.kk || it.w.ru) : it.w.ru) : it.ru); // перевод слова
+function langButtons(){ return [['kk','🇰🇿 Қазақша'],['ru','🇷🇺 Русский']].map(([c,t])=>`<button class="${lang()===c?'on':''}" onclick="A.setLang('${c}')">${t}</button>`).join(''); }
 
 /* ---------- 4. State / Store ---------- */
 const STORE_KEY = 'hoppy_state_v1';
@@ -450,27 +591,27 @@ const Cloud = {
       let changed = false;
       for (const {item_type:t, data:d} of data){
         if (!d) continue;
-        if (t==='category' && d.id && d.ru && !CATEGORIES.find(c=>c.id===d.id)){ CATEGORIES.push({id:d.id, ru:d.ru, icon:d.icon||'✨', region:d.region||'space'}); changed = true; }
-        if (t==='word' && (d.en||d.id) && d.emoji){ const id = String(d.id||d.en).toLowerCase(); if (!WORDS.find(w=>w.id===id)){ WORDS.push({id, en:d.en||id, ru:d.ru||'', cat:d.cat||'extra', emoji:d.emoji, ipa:d.ipa||'', hint:d.hint||'', level:d.level||2}); changed = true; } }
+        if (t==='category' && d.id && d.ru && !CATEGORIES.find(c=>c.id===d.id)){ CATEGORIES.push({id:d.id, ru:d.ru, kk:d.kk||d.ru, icon:d.icon||'✨', region:d.region||'space'}); changed = true; }
+        if (t==='word' && (d.en||d.id) && d.emoji){ const id = String(d.id||d.en).toLowerCase(); if (!WORDS.find(w=>w.id===id)){ WORDS.push({id, en:d.en||id, ru:d.ru||'', kk:d.kk||d.ru||'', cat:d.cat||'extra', emoji:d.emoji, ipa:d.ipa||'', hint:d.hint||'', level:d.level||2}); changed = true; } }
         if (t==='number' && d.n && d.en && !NUMBERS.find(n=>n.n===d.n)){ NUMBERS.push({n:d.n, en:d.en, emoji:d.emoji||'⭐'}); changed = true; }
-        if (t==='letter' && d.up && !LETTERS.find(l=>l.up===d.up)){ LETTERS.push({up:d.up, low:d.low||d.up.toLowerCase(), name:d.name||'', sound:d.sound||'', word:d.word||'', emoji:d.emoji||'✨', say:d.say||d.up}); changed = true; }
+        if (t==='letter' && d.up && !LETTERS.find(l=>l.up===d.up)){ LETTERS.push({up:d.up, low:d.low||d.up.toLowerCase(), name:d.name||'', ipa:d.sound||'', snd:d.snd||'', word:d.word||'', emoji:d.emoji||'✨', say:d.say||d.up}); changed = true; }
       }
-      if (WORDS.some(w=>w.cat==='extra') && !CATEGORIES.find(c=>c.id==='extra')) CATEGORIES.push({id:'extra', ru:'Новые слова', icon:'✨', region:'space'});
+      if (WORDS.some(w=>w.cat==='extra') && !CATEGORIES.find(c=>c.id==='extra')) CATEGORIES.push({id:'extra', ru:'Новые слова', kk:'Жаңа сөздер', icon:'✨', region:'space'});
       NUMBERS.sort((a,b)=>a.n-b.n);
       if (changed){ buildItems(); render(); }
       this.status = this.status==='connecting' ? 'ok' : this.status;
     } catch(e){ this.status = 'local'; }
   },
   async restore(code){
-    if (!this.db) throw new Error('нет подключения');
+    if (!this.db) throw new Error(tr('noConn'));
     const q = (kind) => this.db.from(TABLE).select('id,data').eq('item_type', kind).eq('data->>child_id', code).order('created_at', {ascending:false});
     const [p, pr, ls] = await Promise.all([q('child_profile').limit(1), q('learning_progress').limit(1), q('daily_lesson').limit(1000)]);
     if (p.error) throw p.error;
-    if (!p.data || !p.data[0]) throw new Error('профиль не найден');
+    if (!p.data || !p.data[0]) throw new Error(tr('noProfile'));
     const d = p.data[0].data;
-    const st = freshState();
+    const st = freshState(); st.settings.ui_lang = S.settings.ui_lang;
     st.child = {id:d.child_id, name:d.name, age:d.age, start_level:d.start_level, created_at:d.created_at};
-    st.settings = {...DEFAULT_SETTINGS, ...(d.settings||{})};
+    st.settings = {...DEFAULT_SETTINGS, ...(d.settings||{}), ui_lang:(d.settings&&d.settings.ui_lang)||st.settings.ui_lang};
     st.rewards = d.rewards || st.rewards; st.stats = d.stats || st.stats;
     st.cloudIds.profile = p.data[0].id;
     if (pr.data && pr.data[0]){ st.cloudIds.progress = pr.data[0].id; for (const it of (pr.data[0].data.items||[])){ const {item_id, state, ...rest} = it; st.progress[item_id] = rest; } }
@@ -488,17 +629,17 @@ const Voice = {
     const vs = this.voices.filter(v => norm(v).startsWith(acc));
     return vs.find(v => /natural|neural|google|samantha|daniel|serena|aria|jenny|libby|sonia|ava|allison/i.test(v.name)) || vs[0] || this.voices.find(v => v.lang.startsWith('en')) || null;
   },
-  ruV(){ return this.voices.find(v => v.lang.replace('_','-').startsWith('ru')) || null; },
+  nativeV(){ return this.voices.find(v => v.lang.replace('_','-').toLowerCase().startsWith(lang())) || null; },
   say(text, {slow=false, lang='en'} = {}){
     if (!('speechSynthesis' in window) || !text) return Promise.resolve();
     try { speechSynthesis.cancel(); } catch(e){}
     const u = new SpeechSynthesisUtterance(text);
     if (lang==='en'){ u.voice = this.en(); u.lang = S.settings.accent; u.rate = slow ? .55 : .85; u.pitch = 1.1; }
-    else { const v = this.ruV(); if (!v) return Promise.resolve(); u.voice = v; u.lang = 'ru-RU'; u.rate = 1; u.pitch = 1.15; }
+    else { const v = this.nativeV(); if (!v) return Promise.resolve(); u.voice = v; u.lang = v.lang; u.rate = 1; u.pitch = 1.15; }
     u.volume = S.settings.volume;
     return new Promise(res => { u.onend = u.onerror = () => res(); speechSynthesis.speak(u); setTimeout(res, 7000); });
   },
-  ru(text){ return S.settings.ruVoice ? this.say(text.replace(/[^\p{L}\p{N}\s,.!?-]/gu,''), {lang:'ru'}) : Promise.resolve(); },
+  native(text){ return S.settings.ruVoice ? this.say(text.replace(/[^\p{L}\p{N}\s,.!?-]/gu,''), {lang:'native'}) : Promise.resolve(); },
   item(key, slow=false){
     const it = ITEMS[key]; if (!it) return Promise.resolve();
     if (it.type==='L') return this.say(`${it.say}. ${it.l.word}`, {slow});
@@ -645,12 +786,12 @@ function lessonDoneToday(){ return S.lessons.some(l => l.date===today() && l.kin
 function planFor(lesson){
   const out = [];
   for (const k of lesson.new_items){ const it = ITEMS[k]; if (!it) continue;
-    if (it.type==='L') out.push(`🔤 Новая буква: <b>${it.l.up}</b>`);
-    else if (it.type==='N') out.push(`🔢 Новое число: <b>${it.n.n} — ${it.en.toUpperCase()}</b>`);
-    else out.push(`${it.emoji} Новое слово: <b>${esc(it.en.toUpperCase())}</b>`); }
-  if (lesson.review_items.length) out.push(`🔁 Повторяем: ${lesson.review_items.slice(0,5).map(k=>ITEMS[k].emoji).join(' ')}`);
-  const pr = lesson.steps.find(s=>s.t==='pronounce'||s.t==='hello'); if (pr) out.push(`🎤 Произносим: <b>${esc(ITEMS[pr.key].en.toUpperCase())}</b>`);
-  const g = lesson.steps.filter(s=>s.t==='game').map(s=>GAMES[s.g].title); if (g.length) out.push(`🎮 Игра: ${g.join(', ')}`);
+    if (it.type==='L') out.push(`🔤 ${tr('p_letter')}: <b>${it.l.up}</b>`);
+    else if (it.type==='N') out.push(`🔢 ${tr('p_number')}: <b>${it.n.n} — ${it.en.toUpperCase()}</b>`);
+    else out.push(`${it.emoji} ${tr('p_word')}: <b>${esc(it.en.toUpperCase())}</b>`); }
+  if (lesson.review_items.length) out.push(`🔁 ${tr('p_review')}: ${lesson.review_items.slice(0,5).map(k=>ITEMS[k].emoji).join(' ')}`);
+  const pr = lesson.steps.find(s=>s.t==='pronounce'||s.t==='hello'); if (pr) out.push(`🎤 ${tr('p_say')}: <b>${esc(ITEMS[pr.key].en.toUpperCase())}</b>`);
+  const g = lesson.steps.filter(s=>s.t==='game').map(s=>GAMES[s.g].title); if (g.length) out.push(`🎮 ${tr('p_game')}: ${g.join(', ')}`);
   return out;
 }
 
@@ -664,25 +805,25 @@ function distractors(target, type, count, pred=()=>true){
 }
 function choiceRound(g, target, opts){ return {kind:'choice', target, options:shuffle([target, ...opts]), wrong:[], solved:false}; }
 const GAMES = {
-  findPicture:{ title:'Найди картинку', icon:'🖼️', types:['W'],
-    round(g, k){ return {...choiceRound(g, k, distractors(k,'W',3)), prompt:`<div class="word">${esc(ITEMS[k].en)}</div><div class="hint">Найди картинку 👇</div>`}; },
+  findPicture:{ get title(){ return tr('g_findPicture'); }, icon:'🖼️', types:['W'],
+    round(g, k){ return {...choiceRound(g, k, distractors(k,'W',3)), prompt:`<div class="word">${esc(ITEMS[k].en)}</div><div class="hint">${tr('h_findPic')}</div>`}; },
     opt:k => ITEMS[k].emoji },
-  listenChoose:{ title:'Услышь и выбери', icon:'👂', types:['W'], listen:true,
-    round(g, k){ return {...choiceRound(g, k, distractors(k,'W',3)), prompt:`<button class="rbtn blue" style="margin:0 auto" onclick="A.hear('${k}')">🔊<small>ещё раз</small></button><div class="hint">Послушай и найди 👇</div>`}; },
+  listenChoose:{ get title(){ return tr('g_listenChoose'); }, icon:'👂', types:['W'], listen:true,
+    round(g, k){ return {...choiceRound(g, k, distractors(k,'W',3)), prompt:`<button class="rbtn blue" style="margin:0 auto" onclick="A.hear('${k}')">🔊<small>${tr('b_again')}</small></button><div class="hint">${tr('h_listen')}</div>`}; },
     opt:k => ITEMS[k].emoji },
-  findLetter:{ title:'Найди букву', icon:'🔤', types:['L'], listen:true,
-    round(g, k){ return {...choiceRound(g, k, distractors(k,'L',3)), prompt:`<button class="rbtn blue" style="margin:0 auto" onclick="A.hear('${k}')">🔊<small>ещё раз</small></button><div class="hint">Какую букву я назвал? 👇</div>`}; },
+  findLetter:{ get title(){ return tr('g_findLetter'); }, icon:'🔤', types:['L'], listen:true,
+    round(g, k){ return {...choiceRound(g, k, distractors(k,'L',3)), prompt:`<button class="rbtn blue" style="margin:0 auto" onclick="A.hear('${k}')">🔊<small>${tr('b_again')}</small></button><div class="hint">${tr('h_letter')}</div>`}; },
     opt:k => `<span class="t" style="font-size:52px">${ITEMS[k].l.up}</span>` },
-  count:{ title:'Сосчитай', icon:'🔢', types:['N'],
+  count:{ get title(){ return tr('g_count'); }, icon:'🔢', types:['N'],
     round(g, k){ const n = ITEMS[k].n.n; const near = NUMBERS.filter(x=>x.n!==n && Math.abs(x.n-n)<=3).map(x=>'N:'+x.n);
-      return {...choiceRound(g, k, shuffle(near).slice(0, 2)), prompt:`<div class="count-box">${ITEMS[k].emoji.repeat(n)}</div><div class="hint">Сколько здесь? 👇</div>`}; },
+      return {...choiceRound(g, k, shuffle(near).slice(0, 2)), prompt:`<div class="count-box">${ITEMS[k].emoji.repeat(n)}</div><div class="hint">${tr('h_count')}</div>`}; },
     opt:k => `<span class="t">${ITEMS[k].en.toUpperCase()}</span><span class="d">${ITEMS[k].n.n}</span>` },
-  repeat:{ title:'Повтори за мной', icon:'🦜', types:['W','N'],
+  repeat:{ get title(){ return tr('g_repeat'); }, icon:'🦜', types:['W','N'],
     round(g, k){ UI.pr = newPr(k); return {kind:'repeat', target:k}; } },
-  build:{ title:'Собери слово', icon:'🧩', types:['W'], filter:buildable,
+  build:{ get title(){ return tr('g_build'); }, icon:'🧩', types:['W'], filter:buildable,
     round(g, k){ const letters = ITEMS[k].en.split(''); let tiles; do { tiles = shuffle(letters.map((c,i)=>({c,i}))); } while (letters.length>1 && tiles.map(t=>t.c).join('')===ITEMS[k].en);
       return {kind:'build', target:k, tiles, placed:0, used:[], misses:0, wrongTile:-1}; } },
-  match:{ title:'Соедини', icon:'🔗', types:['W'], rounds:1,
+  match:{ get title(){ return tr('g_match'); }, icon:'🔗', types:['W'], rounds:1,
     round(g, k){ let keys = [...new Set(g.keys.filter(x=>ITEMS[x].type==='W'))]; keys = shuffle(keys).slice(0,3);
       if (keys.length < 3) keys = keys.concat(distractors(keys[0]||'W:cat','W',3-keys.length, i=>!keys.includes(i.key)));
       return {kind:'match', target:keys[0], keys, left:shuffle(keys), right:shuffle(keys), sel:null, done:[], wrong:null}; } },
@@ -722,12 +863,13 @@ function newPr(key){ return {key, attempts:0, listening:false, msg:'', manual:fa
 const UI = {screen:'home', params:{}, lesson:null, game:null, pr:null, modal:null, ob:{step:0, name:'', age:5}, wordsTab:'W', gate:null};
 function go(screen, params={}){ UI.screen = screen; UI.params = params; UI.modal = null; render(); window.scrollTo(0,0); }
 function mascotSay(text, sm=false){ return `<div class="say-row"><div class="mascot ${sm?'sm':''}">🐰</div><div class="bubble left">${text}</div></div>`; }
-function topBar(title, back='home', extra=''){ return `<div class="top"><button class="back" aria-label="Назад" onclick="A.go('${back}')">⬅️</button>${title?`<h2>${title}</h2>`:''}${extra}</div>`; }
+function topBar(title, back='home', extra=''){ return `<div class="top"><button class="back" aria-label="${tr('back')}" onclick="A.go('${back}')">⬅️</button>${title?`<h2>${title}</h2>`:''}${extra}</div>`; }
 function growth(){ const days = new Set(S.lessons.filter(l=>l.completed).map(l=>l.date)).size; return {days, stage:Math.min(PLANT.length-1, days===0?0:days<2?1:days<4?2:days<7?3:days<12?4:days<20?5:6)}; }
 function plantHtml(size=90){ const {stage} = growth(); return `<div class="plant" style="font-size:${size*(0.7+stage*0.08)}px">${PLANT[stage]}</div>`; }
 
 function render(){
   const app = $('#app');
+  document.documentElement.lang = lang(); document.title = tr('docTitle');
   if (!S.child && UI.screen!=='onboarding' && UI.screen!=='parentGate' && UI.screen!=='parent') UI.screen = 'onboarding';
   const fn = Screens[UI.screen] || Screens.home;
   app.innerHTML = fn() + (UI.modal ? `<div class="modal-bg" onclick="if(event.target===this)A.closeModal()"><div class="modal">${UI.modal()}</div></div>` : '');
@@ -738,24 +880,25 @@ const Screens = {
     const o = UI.ob;
     if (o.step===0) return `<div class="ob center">
       <div class="mascot" style="font-size:130px;margin:0 auto">🐰</div>
-      <h1 style="font-size:40px;margin:0;font-weight:900">Привет! 👋</h1>
-      <div class="bubble" style="font-size:22px">Я — зайчик <b>Хоппи</b>! Давай начнём наше английское приключение!</div>
-      <button class="btn huge pulse" onclick="A.ob(1)">Поехали! ▶</button></div>`;
+      <div class="langs">${langButtons()}</div>
+      <h1 style="font-size:40px;margin:0;font-weight:900">${tr('hi')}</h1>
+      <div class="bubble" style="font-size:22px">${tr('intro')}</div>
+      <button class="btn huge pulse" onclick="A.ob(1)">${tr('go')}</button></div>`;
     if (o.step===1) return `<div class="ob">
-      ${mascotSay('Как тебя зовут? 😊')}
-      <input class="name" id="nm" maxlength="20" placeholder="Имя" value="${esc(o.name)}" autocomplete="off">
-      <div class="muted center">Достаточно имени — больше ничего не нужно</div>
-      <button class="btn" onclick="A.obName()">Дальше ▶</button></div>`;
+      ${mascotSay(tr('askName'))}
+      <input class="name" id="nm" maxlength="20" placeholder="${tr('namePh')}" value="${esc(o.name)}" autocomplete="off">
+      <div class="muted center">${tr('nameNote')}</div>
+      <button class="btn" onclick="A.obName()">${tr('next')}</button></div>`;
     if (o.step===2) return `<div class="ob">
-      ${mascotSay(`${esc(o.name)}, сколько тебе лет?`)}
+      ${mascotSay(tr('askAge', {name:esc(o.name)}))}
       <div class="ages">${[4,5,6,7,8].map(a=>`<button class="${o.age===a?'on':''}" onclick="A.obAge(${a})">${a}${a===8?'+':''}</button>`).join('')}</div>
-      <button class="btn" onclick="A.ob(3)">Дальше ▶</button></div>`;
+      <button class="btn" onclick="A.ob(3)">${tr('next')}</button></div>`;
     return `<div class="ob">
-      ${mascotSay('Ты уже знаешь английские буквы?')}
-      <button class="choice" onclick="A.obDone('zero')"><span class="ic">🌱</span>Я начинаю с нуля</button>
-      <button class="choice" onclick="A.obDone('some')"><span class="ic">🌿</span>Я немного знаю</button>
-      <button class="choice" onclick="A.obDone('learned')"><span class="ic">🌳</span>Я уже немного учился</button>
-      <div class="muted center">Любой ответ подходит — так Хоппи поймёт, с чего начать</div></div>`;
+      ${mascotSay(tr('askLevel'))}
+      <button class="choice" onclick="A.obDone('zero')"><span class="ic">🌱</span>${tr('lvlZero')}</button>
+      <button class="choice" onclick="A.obDone('some')"><span class="ic">🌿</span>${tr('lvlSome')}</button>
+      <button class="choice" onclick="A.obDone('learned')"><span class="ic">🌳</span>${tr('lvlLearned')}</button>
+      <div class="muted center">${tr('lvlNote')}</div></div>`;
   },
 
   home(){
@@ -763,30 +906,30 @@ const Screens = {
     if (!UI.lesson || UI.lesson.date!==today()) UI.lesson = restoreCurrent() || null;
     const inProgress = UI.lesson && UI.lesson.kind==='daily' && UI.lesson.i>0 && !done;
     const preview = done ? null : (UI.lesson && UI.lesson.kind==='daily' ? UI.lesson : (UI.preview && UI.preview.date===today() ? UI.preview : (UI.preview = buildLesson('daily'))));
-    const greet = done ? `Сегодня мы немного выучили английский! 🌱 Завтра продолжим.` : `Сегодня нас ждёт маленькое приключение 🌈`;
+    const greet = tr(done ? 'greetDone' : 'greetToday');
     return `
-      <div class="hero"><div class="mascot">🐰</div><div class="bubble left"><div style="font-size:24px;font-weight:900">Привет, ${esc(S.child.name)}! 👋</div>${greet}</div></div>
+      <div class="hero"><div class="mascot">🐰</div><div class="bubble left"><div style="font-size:24px;font-weight:900">${tr('helloName', {name:esc(S.child.name)})}</div>${greet}</div></div>
       ${done
-        ? `<button class="btn huge green" onclick="A.startLesson('extra')">🎈 Ещё немного поиграем</button>`
-        : `<button class="btn huge pulse" onclick="A.startLesson('daily')">${inProgress?'▶ ПРОДОЛЖИМ':'🌟 НАЧАТЬ'}</button>`}
-      ${preview ? `<div class="plan"><div style="color:var(--ink2)">Сегодня:</div>${planFor(preview).map(x=>`<div>${x}</div>`).join('')}</div>` : ''}
+        ? `<button class="btn huge green" onclick="A.startLesson('extra')">${tr('playMore')}</button>`
+        : `<button class="btn huge pulse" onclick="A.startLesson('daily')">${tr(inProgress?'continue':'start')}</button>`}
+      ${preview ? `<div class="plan"><div style="color:var(--ink2)">${tr('today')}</div>${planFor(preview).map(x=>`<div>${x}</div>`).join('')}</div>` : ''}
       <div class="menu">
-        <button class="tile" onclick="A.go('world')"><span class="ic">${PLANT[growth().stage]}</span>Мой мир</button>
-        <button class="tile" onclick="A.go('words')"><span class="ic">📚</span>Мои слова</button>
-        <button class="tile" onclick="A.go('games')"><span class="ic">🎮</span>Игры</button>
-        <button class="tile" onclick="A.go('speak')"><span class="ic">🎤</span>Произношение</button>
+        <button class="tile" onclick="A.go('world')"><span class="ic">${PLANT[growth().stage]}</span>${tr('myWorld')}</button>
+        <button class="tile" onclick="A.go('words')"><span class="ic">📚</span>${tr('myWords')}</button>
+        <button class="tile" onclick="A.go('games')"><span class="ic">🎮</span>${tr('games')}</button>
+        <button class="tile" onclick="A.go('speak')"><span class="ic">🎤</span>${tr('speak')}</button>
       </div>
-      <button class="parent-link" onclick="A.go('parentGate')">⚙️ Родителям</button>`;
+      <div class="row" style="margin-top:22px"><button class="parent-link" style="margin:0" onclick="A.toggleLang()">${tr('switchLang')}</button><button class="parent-link" style="margin:0" onclick="A.go('parentGate')">${tr('parents')}</button></div>`;
   },
 
   lesson(){
     const L = UI.lesson; if (!L) return Screens.home();
     const st = L.steps[L.i];
     const trail = `<div class="trail">${L.steps.map((s,i)=>`<i class="${i<L.i?'on':i===L.i?'cur':''}"></i>`).join('')}</div>`;
-    const top = `<div class="top"><button class="back" aria-label="Пауза" onclick="A.pauseLesson()">⏸️</button>${trail}<span style="font-size:34px">🐰</span></div>`;
+    const top = `<div class="top"><button class="back" aria-label="${tr('pause')}" onclick="A.pauseLesson()">⏸️</button>${trail}<span style="font-size:34px">🐰</span></div>`;
     if (st.t==='hello') return top + `<div class="center" style="font-size:34px;font-weight:900;color:var(--coral);letter-spacing:2px">WELCOME!</div>` + prView(true) + nextBtn(UI.pr.attempts>0);
-    if (st.t==='learn') return top + learnCard(st.key) + `<button class="btn green" onclick="A.next()">Дальше ▶</button>`;
-    if (st.t==='pronounce') return top + `<div class="center hint" style="font-size:20px">🎤 Скажи вместе с Хоппи</div>` + prView() + nextBtn(UI.pr.attempts>0);
+    if (st.t==='learn') return top + learnCard(st.key) + `<button class="btn green" onclick="A.next()">${tr('next')}</button>`;
+    if (st.t==='pronounce') return top + `<div class="center hint" style="font-size:20px">🎤 ${tr('sayWithHoppy')}</div>` + prView() + nextBtn(UI.pr.attempts>0);
     if (st.t==='game') return top + gameView();
     return finishView(L);
   },
@@ -794,56 +937,56 @@ const Screens = {
   games(){
     const list = Object.entries(GAMES);
     if (UI.game && !UI.game.embedded && UI.params.play) return topBar('', 'games') + gameView();
-    return topBar('🎮 Игры') + `<div class="menu" style="margin-top:4px">${list.map(([id,g])=>`<button class="tile" onclick="A.play('${id}')"><span class="ic">${g.icon}</span>${g.title}</button>`).join('')}</div>
-      ${mascotSay('Выбирай любую игру! Ошибаться можно — так мы и учимся 💛', true)}`;
+    return topBar('🎮 '+tr('games')) + `<div class="menu" style="margin-top:4px">${list.map(([id,g])=>`<button class="tile" onclick="A.play('${id}')"><span class="ic">${g.icon}</span>${g.title}</button>`).join('')}</div>
+      ${mascotSay(tr('gamesIntro'), true)}`;
   },
 
   speak(){
-    if (UI.params.key) return topBar('🎤 Произношение', 'speak') + prView() + `<div class="spacer"></div><button class="btn soft" onclick="A.speakNext()">Другое слово ➡️</button>`;
+    if (UI.params.key) return topBar('🎤 '+tr('speak'), 'speak') + prView() + `<div class="spacer"></div><button class="btn soft" onclick="A.speakNext()">${tr('otherWord')}</button>`;
     const keys = speakList();
-    return topBar('🎤 Произношение') + mascotSay('Выбери слово — послушаем и скажем вместе!', true) + `<div class="spacer"></div>
+    return topBar('🎤 '+tr('speak')) + mascotSay(tr('speakIntro'), true) + `<div class="spacer"></div>
       <div class="grid">${keys.map(k=>`<button class="wcard" onclick="A.speakWord('${k}')"><span class="e">${ITEMS[k].emoji}</span><span class="w">${esc(ITEMS[k].en)}</span></button>`).join('')}</div>`;
   },
 
   words(){
     const tab = UI.wordsTab, region = UI.params.region;
-    const tabs = `<div class="tabs"><button class="tab ${tab==='L'?'on':''}" onclick="A.tab('L')">🔤 Буквы</button><button class="tab ${tab==='N'?'on':''}" onclick="A.tab('N')">🔢 Числа</button><button class="tab ${tab==='W'?'on':''}" onclick="A.tab('W')">🐱 Слова</button></div>`;
+    const tabs = `<div class="tabs"><button class="tab ${tab==='L'?'on':''}" onclick="A.tab('L')">🔤 ${tr('t_letters')}</button><button class="tab ${tab==='N'?'on':''}" onclick="A.tab('N')">🔢 ${tr('t_numbers')}</button><button class="tab ${tab==='W'?'on':''}" onclick="A.tab('W')">🐱 ${tr('t_words')}</button></div>`;
     let body = '';
     if (tab==='L') body = `<div class="grid g4">${LETTERS.map(l=>{const k='L:'+l.up;return `<button class="wcard ${SRS.seen(k)?'':'dim'}" onclick="A.card('${k}')"><span class="L">${l.up}${l.low}</span><span class="e" style="font-size:26px">${l.emoji}</span></button>`}).join('')}</div>`;
     else if (tab==='N') body = `<div class="grid">${NUMBERS.map(n=>{const k='N:'+n.n;return `<button class="wcard ${SRS.seen(k)?'':'dim'}" onclick="A.card('${k}')"><span class="L">${n.n}</span><span class="w">${n.en}</span></button>`}).join('')}</div>
-      <div class="plan center">✨ Числа 11–20 откроются чуть позже</div>`;
+      <div class="plan center">✨ ${tr('numsLater')}</div>`;
     else {
       const cats = CATEGORIES.filter(c => !region || c.region===region);
       const blocks = cats.map(c => { const ws = WORDS.filter(w => w.cat===c.id && SRS.seen('W:'+w.id)); if (!ws.length) return '';
-        return `<div class="cat-title">${c.icon} ${c.ru}</div><div class="grid">${ws.map(w=>`<button class="wcard" onclick="A.card('W:${w.id}')"><span class="e">${w.emoji}</span><span class="w">${esc(w.en)}</span></button>`).join('')}</div>`; }).join('');
-      body = blocks || mascotSay('Здесь появятся слова, которые мы узнаем вместе! 🌟', true);
-      body += `<div class="plan center">✨ Новые слова появятся в следующих приключениях</div>`;
+        return `<div class="cat-title">${c.icon} ${nm(c)}</div><div class="grid">${ws.map(w=>`<button class="wcard" onclick="A.card('W:${w.id}')"><span class="e">${w.emoji}</span><span class="w">${esc(w.en)}</span></button>`).join('')}</div>`; }).join('');
+      body = blocks || mascotSay(tr('wordsEmpty'), true);
+      body += `<div class="plan center">✨ ${tr('wordsLater')}</div>`;
     }
-    return topBar(region ? REGIONS.find(r=>r.id===region).icon+' '+REGIONS.find(r=>r.id===region).ru : '📚 Мои слова', region?'world':'home') + tabs + body;
+    return topBar(region ? REGIONS.find(r=>r.id===region).icon+' '+nm(REGIONS.find(r=>r.id===region)) : '📚 '+tr('myWords'), region?'world':'home') + tabs + body;
   },
 
   world(){
     const {days, stage} = growth();
     const st = S.rewards.stickers, room = S.rewards.room;
     const regions = REGIONS.map(r => ({...r, open:regionOpen(r.id)}));
-    return topBar('🌍 Мой мир') + `
+    return topBar('🌍 '+tr('myWorld')) + `
       <div class="plant-box">${plantHtml(80)}<div class="pot">🪴</div>
-        <div style="font-size:18px;margin-top:6px">${days ? 'Наш росток растёт с каждым занятием! 🌱' : 'Посадим семечко на первом занятии! 🌰'}</div></div>
-      <div class="cat-title">🗺️ Места</div>
-      <div class="menu" style="margin-top:0">${regions.map(r=>`<button class="tile ${r.open?'':'locked'}" style="background:${r.color}" onclick="${r.open?`A.region('${r.id}')`:`toast('Это место скоро откроется! ✨')`}"><span class="ic">${r.open?r.icon:'🔒'}</span>${r.ru}</button>`).join('')}</div>
-      <div class="cat-title">🏡 Комната Хоппи</div>
-      <div class="room"><span style="font-size:56px">🐰</span>${room.map(x=>`<span>${x}</span>`).join('')}${room.length?'':'<span class="muted" style="font-size:16px;align-self:center">Здесь появятся вещи для Хоппи</span>'}</div>
-      <div class="cat-title">🌟 Мои наклейки</div>
+        <div style="font-size:18px;margin-top:6px">${tr(days ? 'plantGrow' : 'plantSeed')}</div></div>
+      <div class="cat-title">🗺️ ${tr('places')}</div>
+      <div class="menu" style="margin-top:0">${regions.map(r=>`<button class="tile ${r.open?'':'locked'}" style="background:${r.color}" onclick="${r.open?`A.region('${r.id}')`:`toast(tr('soon'))`}"><span class="ic">${r.open?r.icon:'🔒'}</span>${nm(r)}</button>`).join('')}</div>
+      <div class="cat-title">🏡 ${tr('room')}</div>
+      <div class="room"><span style="font-size:56px">🐰</span>${room.map(x=>`<span>${x}</span>`).join('')}${room.length?'':'<span class="muted" style="font-size:16px;align-self:center">'+tr('roomEmpty')+'</span>'}</div>
+      <div class="cat-title">🌟 ${tr('stickers')}</div>
       <div class="stickers">${STICKERS.slice(0, Math.max(10, Math.ceil((st.length+1)/5)*5)).map((_,i)=>st[i]?`<div class="stk">${st[i]}</div>`:`<div class="stk empty">?</div>`).join('')}</div>`;
   },
 
   parentGate(){
     if (!UI.gate){ const a = 6+Math.floor(Math.random()*4), b = 5+Math.floor(Math.random()*5); UI.gate = {a, b}; }
-    return topBar('Для взрослых', S.child?'home':'onboarding') + `<div class="card gate center">
-      <div style="font-size:20px">Чтобы войти, решите пример:</div>
+    return topBar(tr('adults'), S.child?'home':'onboarding') + `<div class="card gate center">
+      <div style="font-size:20px">${tr('gateQ')}</div>
       <div style="font-size:44px;font-weight:900;margin-top:10px">${UI.gate.a} × ${UI.gate.b} = ?</div>
-      <input id="gate" type="number" inputmode="numeric" autocomplete="off" placeholder="Ответ">
-      <button class="btn blue" onclick="A.gateCheck()">Войти</button></div>`;
+      <input id="gate" type="number" inputmode="numeric" autocomplete="off" placeholder="${tr('answer')}">
+      <button class="btn blue" onclick="A.gateCheck()">${tr('enter')}</button></div>`;
   },
 
   parent(){
@@ -857,40 +1000,40 @@ const Screens = {
     const last7 = Array.from({length:7}, (_,i)=>addDays(today(), i-6)).map(d=>({d, m:Math.round((S.stats.days[d]?.sec||0)/60)}));
     const maxM = Math.max(5, ...last7.map(x=>x.m));
     const s = S.settings;
-    const cloud = {ok:'✅ Синхронизировано с облаком', local:'💾 Сохраняется на устройстве (облако недоступно)', connecting:'⏳ Подключение к облаку…', off:'💾 Сохраняется на устройстве'}[Cloud.status];
-    const chip = k => `<span class="chip">${ITEMS[k].emoji} ${esc(ITEMS[k].type==='L'?ITEMS[k].l.up:ITEMS[k].en)}${ITEMS[k].ru&&ITEMS[k].type==='W'?' — '+esc(ITEMS[k].ru):''}</span>`;
-    return topBar('Родителям') + `
-      <div class="p-card"><h3>👧 ${esc(S.child?.name||'')}${S.child?.age?`, ${S.child.age} лет`:''}</h3>
+    const cloud = tr('cloud_'+Cloud.status);
+    const chip = k => `<span class="chip">${ITEMS[k].emoji} ${esc(ITEMS[k].type==='L'?ITEMS[k].l.up:ITEMS[k].en)}${ITEMS[k].type==='W'&&trWord(ITEMS[k])?' — '+esc(trWord(ITEMS[k])):''}</span>`;
+    return topBar(tr('parentsTitle')) + `
+      <div class="p-card"><h3>👧 ${esc(S.child?.name||'')}${S.child?.age?', '+tr('ageYears', {n:S.child.age}):''}</h3>
         <div class="stats">
-          <div class="stat"><b>${days}</b><span>дней с английским</span></div>
-          <div class="stat"><b>${Math.round(sec/60)}</b><span>минут занятий</span></div>
-          <div class="stat"><b>${byType('W').length}</b><span>знакомых слов</span></div>
-          <div class="stat"><b>${byType('L').length} / ${byType('N').length}</b><span>букв / чисел</span></div>
+          <div class="stat"><b>${days}</b><span>${tr('st_days')}</span></div>
+          <div class="stat"><b>${Math.round(sec/60)}</b><span>${tr('st_min')}</span></div>
+          <div class="stat"><b>${byType('W').length}</b><span>${tr('st_words')}</span></div>
+          <div class="stat"><b>${byType('L').length} / ${byType('N').length}</b><span>${tr('st_ln')}</span></div>
         </div>
-        <div class="muted" style="margin-top:10px">Минуты за последние 7 дней</div>
+        <div class="muted" style="margin-top:10px">${tr('last7')}</div>
         <div class="bars">${last7.map(x=>`<div><i style="height:${Math.max(3,x.m/maxM*70)}px"></i>${x.d.slice(8)}</div>`).join('')}</div>
       </div>
-      <div class="p-card"><h3>📖 Темы</h3>${topics.length?`<div class="chips">${topics.map(t=>`<span class="chip">${t.c.icon} ${t.c.ru}: ${t.n} из ${t.total}</span>`).join('')}</div>`:'<div class="muted">Темы появятся после первого занятия</div>'}</div>
-      <div class="p-card"><h3>🐱 Слова, с которыми познакомились</h3>${byType('W').length?`<div class="chips">${byType('W').map(chip).join('')}</div>`:'<div class="muted">Пока нет</div>'}</div>
-      <div class="p-card"><h3>🔁 Чаще всего повторялись</h3>${often.length?`<div class="chips">${often.map(k=>chip(k).replace('</span>',` · ${S.progress[k].repetition_count}×</span>`)).join('')}</div>`:'<div class="muted">Пока нет</div>'}</div>
-      <div class="p-card"><h3>🌱 Стоит потренировать ещё</h3>${extra.length?`<div class="chips">${extra.map(chip).join('')}</div><div class="muted" style="margin-top:8px">Хоппи сам покажет эти слова чаще. Можно послушать их вместе в разделе «Произношение».</div>`:'<div class="muted">Всё идёт своим темпом 💛</div>'}</div>
-      <div class="p-card"><h3>⚙️ Настройки</h3>
-        <div class="field">Возраст ребёнка<input type="number" min="3" max="12" value="${S.child?.age||5}" onchange="A.setAge(this.value)"></div>
-        <div class="field">Длительность занятия<select onchange="A.set('duration', +this.value)">${[5,10,15].map(m=>`<option value="${m}" ${s.duration===m?'selected':''}>${m} минут</option>`).join('')}</select></div>
-        <div class="field">Вариант английского<select onchange="A.set('accent', this.value)"><option value="en-US" ${s.accent==='en-US'?'selected':''}>🇺🇸 Американский</option><option value="en-GB" ${s.accent==='en-GB'?'selected':''}>🇬🇧 Британский</option></select></div>
-        <div class="field">Звуки в играх<select onchange="A.set('sfx', this.value==='1')"><option value="1" ${s.sfx?'selected':''}>Включены</option><option value="0" ${!s.sfx?'selected':''}>Выключены</option></select></div>
-        <div class="field">Подсказки голосом по-русски<select onchange="A.set('ruVoice', this.value==='1')"><option value="1" ${s.ruVoice?'selected':''}>Включены</option><option value="0" ${!s.ruVoice?'selected':''}>Выключены</option></select></div>
-        <div class="field">Громкость<input type="range" min="0" max="1" step="0.1" value="${s.volume}" onchange="A.set('volume', +this.value)"></div>
-        <div class="field">Время напоминания<input type="time" value="${s.reminder}" onchange="A.set('reminder', this.value)"></div>
-        <div class="field">Язык интерфейса<select onchange="A.set('ui_lang', this.value)"><option value="ru" selected>Русский</option><option value="en" disabled>English (скоро)</option></select></div>
-        <div class="field"><span class="muted">Напоминание приходит, пока приложение открыто в браузере</span><button class="small-btn" onclick="A.notifyPerm()">🔔 Разрешить</button></div>
+      <div class="p-card"><h3>📖 ${tr('topics')}</h3>${topics.length?`<div class="chips">${topics.map(t=>`<span class="chip">${t.c.icon} ${nm(t.c)}: ${tr('ofTotal', {n:t.n, t:t.total})}</span>`).join('')}</div>`:`<div class="muted">${tr('topicsEmpty')}</div>`}</div>
+      <div class="p-card"><h3>🐱 ${tr('metWords')}</h3>${byType('W').length?`<div class="chips">${byType('W').map(chip).join('')}</div>`:`<div class="muted">${tr('none')}</div>`}</div>
+      <div class="p-card"><h3>🔁 ${tr('often')}</h3>${often.length?`<div class="chips">${often.map(k=>chip(k).replace('</span>',` · ${S.progress[k].repetition_count}×</span>`)).join('')}</div>`:`<div class="muted">${tr('none')}</div>`}</div>
+      <div class="p-card"><h3>🌱 ${tr('practice')}</h3>${extra.length?`<div class="chips">${extra.map(chip).join('')}</div><div class="muted" style="margin-top:8px">${tr('practiceNote')}</div>`:`<div class="muted">${tr('ownPace')}</div>`}</div>
+      <div class="p-card"><h3>⚙️ ${tr('settings')}</h3>
+        <div class="field">${tr('s_age')}<input type="number" min="3" max="12" value="${S.child?.age||5}" onchange="A.setAge(this.value)"></div>
+        <div class="field">${tr('s_duration')}<select onchange="A.set('duration', +this.value)">${[5,10,15].map(m=>`<option value="${m}" ${s.duration===m?'selected':''}>${tr('minutes', {n:m})}</option>`).join('')}</select></div>
+        <div class="field">${tr('s_accent')}<select onchange="A.set('accent', this.value)"><option value="en-US" ${s.accent==='en-US'?'selected':''}>${tr('us')}</option><option value="en-GB" ${s.accent==='en-GB'?'selected':''}>${tr('gb')}</option></select></div>
+        <div class="field">${tr('s_sfx')}<select onchange="A.set('sfx', this.value==='1')"><option value="1" ${s.sfx?'selected':''}>${tr('on')}</option><option value="0" ${!s.sfx?'selected':''}>${tr('off')}</option></select></div>
+        <div class="field">${tr('s_voice')}<select onchange="A.set('ruVoice', this.value==='1')"><option value="1" ${s.ruVoice?'selected':''}>${tr('on')}</option><option value="0" ${!s.ruVoice?'selected':''}>${tr('off')}</option></select></div>
+        <div class="field">${tr('s_volume')}<input type="range" min="0" max="1" step="0.1" value="${s.volume}" onchange="A.set('volume', +this.value)"></div>
+        <div class="field">${tr('s_reminder')}<input type="time" value="${s.reminder}" onchange="A.set('reminder', this.value)"></div>
+        <div class="field">${tr('s_lang')}<select onchange="A.setLang(this.value)"><option value="kk" ${lang()==='kk'?'selected':''}>🇰🇿 Қазақша</option><option value="ru" ${lang()==='ru'?'selected':''}>🇷🇺 Русский</option></select></div>
+        <div class="field"><span class="muted">${tr('reminderNote')}</span><button class="small-btn" onclick="A.notifyPerm()">${tr('allow')}</button></div>
       </div>
-      <div class="p-card"><h3>🔒 Данные и безопасность</h3>
-        <div class="muted">Храним только имя, возраст и прогресс обучения. Нет чата, рекламы, публичных профилей и рейтингов. Микрофон включается только по нажатию 🎤 для тренировки произношения; запись не сохраняется.</div>
-        <div class="field">Статус<span class="muted" style="text-align:right">${cloud}</span></div>
-        <div class="field">Код ребёнка (для другого устройства)<span class="chip" style="user-select:all;font-size:12px;max-width:55%;word-break:break-all">${esc(S.child?.id||'—')}</span></div>
-        <div class="field"><input type="text" id="restore" placeholder="Вставьте код" style="max-width:none;flex:1"><button class="small-btn" onclick="A.restore()">Восстановить</button></div>
-        <div class="field"><span></span><button class="small-btn danger" onclick="A.reset()">Начать заново</button></div>
+      <div class="p-card"><h3>🔒 ${tr('privacy')}</h3>
+        <div class="muted">${tr('privacyText')}</div>
+        <div class="field">${tr('status')}<span class="muted" style="text-align:right">${cloud}</span></div>
+        <div class="field">${tr('childCode')}<span class="chip" style="user-select:all;font-size:12px;max-width:55%;word-break:break-all">${esc(S.child?.id||'—')}</span></div>
+        <div class="field"><input type="text" id="restore" placeholder="${tr('pasteCode')}" style="max-width:none;flex:1"><button class="small-btn" onclick="A.restore()">${tr('restore')}</button></div>
+        <div class="field"><span></span><button class="small-btn danger" onclick="A.reset()">${tr('reset')}</button></div>
       </div>`;
   },
 };
@@ -913,62 +1056,62 @@ function learnCard(key){
   if (it.type==='L'){ const l = it.l;
     return `<div class="card center">
       <div class="word letter">${l.up} ${l.low}</div>
-      <div class="hint" style="font-size:20px">Буква называется «${l.name}»</div>
-      <div class="hint">Звук ${l.sound}</div>
+      <div class="hint" style="font-size:20px">${tr('letterName', {n:esc(l.name)})}</div>
+      <div class="hint">${l.snd ? tr('letterSound', {ipa:esc(l.ipa), s:esc(l.snd)}) : esc(l.ipa)}</div>
       <div class="emoji-l" style="margin-top:10px">${l.emoji}</div>
       <div style="font-size:30px;font-weight:900;text-transform:uppercase">${l.up}<span style="color:var(--ink2)">${esc(l.word.slice(1))}</span></div>
       <div class="spacer"></div>
-      <div class="row"><button class="rbtn blue" onclick="A.hearLetter('${l.up}')">🔊<small>буква</small></button>
-      <button class="rbtn purple" onclick="A.hearRaw('${esc(l.word)}')">${l.emoji}<small>слово</small></button>
-      <button class="rbtn green" onclick="A.hear('${key}', true)">🐢<small>медленно</small></button></div></div>`;
+      <div class="row"><button class="rbtn blue" onclick="A.hearLetter('${l.up}')">🔊<small>${tr('b_letter')}</small></button>
+      <button class="rbtn purple" onclick="A.hearRaw('${esc(l.word)}')">${l.emoji}<small>${tr('b_word')}</small></button>
+      <button class="rbtn green" onclick="A.hear('${key}', true)">🐢<small>${tr('b_slow')}</small></button></div></div>`;
   }
   if (it.type==='N'){ const n = it.n;
     return `<div class="card center">
       <div class="count-box" style="box-shadow:none;background:var(--bg)">${it.emoji.repeat(n.n)}</div>
       <div class="word" style="font-size:80px;margin-bottom:0">${n.n}</div>
       <div class="word">${n.en}</div>
-      <div class="row"><button class="rbtn blue" onclick="A.hear('${key}')">🔊<small>слушать</small></button>
-      <button class="rbtn green" onclick="A.hear('${key}', true)">🐢<small>медленно</small></button></div></div>`;
+      <div class="row"><button class="rbtn blue" onclick="A.hear('${key}')">🔊<small>${tr('b_listen')}</small></button>
+      <button class="rbtn green" onclick="A.hear('${key}', true)">🐢<small>${tr('b_slow')}</small></button></div></div>`;
   }
   return `<div class="card center">
     <div class="emoji-xl">${it.emoji}</div>
     <div class="word">${esc(it.en)}</div>
-    <div class="ru">${esc(it.ru)}${it.w.hint?` · <span style="opacity:.8">[${esc(it.w.hint)}]</span>`:''}</div>
+    <div class="ru">${esc(trWord(it))}${it.w.hint?` · <span style="opacity:.8">[${esc(it.w.hint)}]</span>`:''}</div>
     <div class="spacer"></div>
-    <div class="row"><button class="rbtn blue" onclick="A.hear('${key}')">🔊<small>слушать</small></button>
-    <button class="rbtn green" onclick="A.hear('${key}', true)">🐢<small>медленно</small></button></div></div>`;
+    <div class="row"><button class="rbtn blue" onclick="A.hear('${key}')">🔊<small>${tr('b_listen')}</small></button>
+    <button class="rbtn green" onclick="A.hear('${key}', true)">🐢<small>${tr('b_slow')}</small></button></div></div>`;
 }
 function prView(isHello=false){
   const p = UI.pr, it = ITEMS[p.key];
   const pos = Math.min(p.attempts, 4) / 4;
-  const msg = p.msg || (isHello ? 'Послушай: <b>Hello!</b> А теперь скажи <b>Hello!</b> 🎤' : 'Послушай и скажи вместе со мной! 🎤');
+  const msg = p.msg || tr(isHello ? 'helloMsg' : 'sayWithMe');
   return `<div class="card center">
     <div class="emoji-xl">${it.emoji}</div>
     <div class="word ${it.type==='L'?'letter':''}">${esc(it.type==='L'?it.l.up+it.l.low:it.en)}</div>
-    <div class="row"><button class="rbtn blue" onclick="A.hear('${p.key}')">🔊<small>слушать</small></button>
-      <button class="rbtn green" onclick="A.hear('${p.key}', true)">🐢<small>медленно</small></button></div>
-    <button class="mic ${p.listening?'on':''}" onclick="A.mic()" aria-label="Сказать">🎤</button>
-    <div class="mic-label">${p.listening?'Слушаю… говори! 👂':'Нажми и скажи'}</div>
-    ${p.manual?`<div class="spacer"></div><button class="btn soft" onclick="A.saidIt()">✅ Я сказал(а)!</button>`:''}
+    <div class="row"><button class="rbtn blue" onclick="A.hear('${p.key}')">🔊<small>${tr('b_listen')}</small></button>
+      <button class="rbtn green" onclick="A.hear('${p.key}', true)">🐢<small>${tr('b_slow')}</small></button></div>
+    <button class="mic ${p.listening?'on':''}" onclick="A.mic()" aria-label="${tr('b_say')}">🎤</button>
+    <div class="mic-label">${tr(p.listening?'listening':'pressSay')}</div>
+    ${p.manual?`<div class="spacer"></div><button class="btn soft" onclick="A.saidIt()">${tr('saidIt')}</button>`:''}
     <div class="track"><span class="runner" style="left:calc(${pos*100}% - ${pos*80}px + 6px)">🐰</span><span class="goal">🥕</span></div>
   </div>${mascotSay(msg, true)}`;
 }
-function nextBtn(show){ return show ? `<div class="spacer"></div><button class="btn green" onclick="A.next()">Дальше ▶</button>` : `<div class="spacer"></div><button class="btn soft" onclick="A.next()">Пропустить ➡️</button>`; }
+function nextBtn(show){ return show ? `<div class="spacer"></div><button class="btn green" onclick="A.next()">${tr('next')}</button>` : `<div class="spacer"></div><button class="btn soft" onclick="A.next()">${tr('skip')}</button>`; }
 
 function gameView(){
   const g = UI.game; if (!g) return '';
-  if (g.finished && !g.onDone) return `<div class="card center"><div class="big-star">🌟</div><div style="font-size:26px;font-weight:900">Отлично, продолжаем!</div></div>
-    <button class="btn green" onclick="A.play('${g.id}')">🔁 Ещё раз</button><div class="spacer"></div><button class="btn soft" onclick="A.go('games')">🎮 Другие игры</button>`;
+  if (g.finished && !g.onDone) return `<div class="card center"><div class="big-star">🌟</div><div style="font-size:26px;font-weight:900">${tr('goOn')}</div></div>
+    <button class="btn green" onclick="A.play('${g.id}')">${tr('playAgain')}</button><div class="spacer"></div><button class="btn soft" onclick="A.go('games')">${tr('otherGames')}</button>`;
   const G = GAMES[g.id], r = g.r;
-  const head = `<div class="center" style="font-size:20px;margin-bottom:6px">${G.icon} ${G.title} <span class="muted">· ${g.i+1} из ${g.rounds}</span></div>`;
-  const msg = mascotSay(g.msg || 'Я с тобой! 💛', true);
+  const head = `<div class="center" style="font-size:20px;margin-bottom:6px">${G.icon} ${G.title} <span class="muted">· ${tr('ofTotal', {n:g.i+1, t:g.rounds})}</span></div>`;
+  const msg = mascotSay(g.msg || tr('withYou'), true);
   if (r.kind==='choice'){
     const n = r.options.length;
     return head + `<div class="prompt">${r.prompt}</div><div class="opts ${n===3?'n3':''}">${r.options.map((k,i)=>{
       const cls = r.solved && k===r.target ? 'good' : r.wrong.includes(k) ? 'soft' : (r.wrong.length>=2 && k===r.target ? 'hint' : '');
       return `<button class="opt ${cls} ${r.wiggle===k?'wiggle':''}" onclick="A.choose(${i})">${G.opt(k)}</button>`; }).join('')}</div>` + msg;
   }
-  if (r.kind==='repeat') return head + prView() + (UI.pr.attempts>0 ? `<button class="btn green" onclick="A.gameNext()">Дальше ▶</button>` : `<button class="btn soft" onclick="A.gameNext()">Пропустить ➡️</button>`);
+  if (r.kind==='repeat') return head + prView() + (UI.pr.attempts>0 ? `<button class="btn green" onclick="A.gameNext()">${tr('next')}</button>` : `<button class="btn soft" onclick="A.gameNext()">${tr('skip')}</button>`);
   if (r.kind==='build'){
     const word = ITEMS[r.target].en;
     return head + `<div class="center"><div class="emoji-xl" style="font-size:90px">${ITEMS[r.target].emoji}</div>
@@ -977,7 +1120,7 @@ function gameView(){
       <div class="tiles">${r.tiles.map((t,i)=>`<button class="ltile ${r.used.includes(i)?'used':''} ${r.wrongTile===i?'wiggle':''}" onclick="A.tile(${i})">${t.c}</button>`).join('')}</div>` + msg;
   }
   if (r.kind==='match'){
-    return head + `<div class="hint center" style="margin-bottom:12px">Нажми на слово, а потом на картинку</div><div class="match">
+    return head + `<div class="hint center" style="margin-bottom:12px">${tr('matchHint')}</div><div class="match">
       <div class="col">${r.left.map(k=>`<button class="mitem ${r.done.includes(k)?'done':''} ${r.sel===k?'sel':''}" onclick="A.mLeft('${k}')">${esc(ITEMS[k].en)}</button>`).join('')}</div>
       <div class="col">${r.right.map(k=>`<button class="mitem pic ${r.done.includes(k)?'done':''} ${r.wrong===k?'wiggle':''}" onclick="A.mRight('${k}')">${ITEMS[k].emoji}</button>`).join('')}</div></div>` + msg;
   }
@@ -988,11 +1131,11 @@ function finishView(L){
   const stk = L.reward;
   return `<div class="center" style="padding-top:20px">
     <div class="big-star">🌟</div>
-    <div style="font-size:30px;font-weight:900;margin:6px 0">${L.first ? 'Наше первое приключение закончено!' : L.kind==='daily' ? 'Приключение закончено!' : 'Здорово поиграли!'}</div>
-    <div style="font-size:22px">${L.kind==='daily' ? 'Завтра продолжим! 🐰' : 'Ты молодец! 💛'}</div>
-    ${stk ? `<div class="card" style="margin-top:18px"><div style="font-size:18px">Новая наклейка!</div><div style="font-size:90px">${stk}</div>${L.roomItem?`<div style="font-size:18px">И подарок для комнаты Хоппи: <span style="font-size:36px">${L.roomItem}</span></div>`:''}</div>` : ''}
-    <div class="plant-box">${plantHtml(70)}<div style="font-size:18px">Росток стал чуть больше! 🌱</div></div>
-    <button class="btn huge green" onclick="A.go('home')">🏠 Домой</button></div>`;
+    <div style="font-size:30px;font-weight:900;margin:6px 0">${tr(L.first ? 'firstDone' : L.kind==='daily' ? 'done' : 'played')}</div>
+    <div style="font-size:22px">${tr(L.kind==='daily' ? 'tomorrow' : 'wellDone')}</div>
+    ${stk ? `<div class="card" style="margin-top:18px"><div style="font-size:18px">${tr('newSticker')}</div><div style="font-size:90px">${stk}</div>${L.roomItem?`<div style="font-size:18px">${tr('gift')} <span style="font-size:36px">${L.roomItem}</span></div>`:''}</div>` : ''}
+    <div class="plant-box">${plantHtml(70)}<div style="font-size:18px">${tr('plantBigger')}</div></div>
+    <button class="btn huge green" onclick="A.go('home')">${tr('home')}</button></div>`;
 }
 function confetti(){
   const c = document.createElement('div'); c.className = 'confetti';
@@ -1004,23 +1147,23 @@ function confetti(){
 const A = {
   go, closeModal(){ UI.modal = null; render(); },
   ob(step){ UI.ob.step = step; render(); if (step===1) setTimeout(()=>$('#nm')?.focus(), 50); },
-  obName(){ const v = ($('#nm')?.value||'').trim(); if (!v){ toast('Напиши своё имя 😊'); return; } UI.ob.name = v.slice(0,20); A.ob(2); },
+  obName(){ const v = ($('#nm')?.value||'').trim(); if (!v){ toast(tr('enterName')); return; } UI.ob.name = v.slice(0,20); A.ob(2); },
   obAge(a){ UI.ob.age = a; render(); },
   obDone(level){
-    S = freshState();
+    const ui = lang(); S = freshState(); S.settings.ui_lang = ui;
     S.child = {id:uid(), name:UI.ob.name, age:UI.ob.age, start_level:level, created_at:new Date().toISOString()};
     const seed = (keys) => keys.forEach((k,i) => { const p = SRS.ensure(k); p.stage = 1; p.repetition_count = 1; p.last_seen = addDays(today(), -1); p.next_review = addDays(today(), i % 4); });
     if (level==='some'){ seed(LETTER_KEYS().slice(0,10)); seed(NUMBER_KEYS().slice(0,5)); seed(['W:hello','W:apple']); }
     if (level==='learned'){ seed(LETTER_KEYS()); seed(NUMBER_KEYS()); seed(wordOrder().slice(0,8)); }
     Store.save(); UI.preview = null; Sfx.yay(); go('home');
-    Voice.ru(`Привет, ${S.child.name}! Сегодня нас ждёт маленькое приключение!`);
+    Voice.native(tr('v_hello', {name:S.child.name}));
   },
   startLesson(kind){
     let L = kind==='daily' ? restoreCurrent() : null;
     if (!L || L.kind!==kind){ L = kind==='daily' && UI.preview && UI.preview.date===today() && !lessonDoneToday() ? UI.preview : buildLesson(kind); }
     UI.lesson = L; UI.preview = null; S.current = L; Store.saveLocal();
     enterStep(); UI.screen = 'lesson'; render(); window.scrollTo(0,0);
-    if (L.i===0 && L.first) Voice.ru('Привет! Послушай и повтори!').then(()=>Voice.item('W:hello'));
+    if (L.i===0 && L.first) Voice.native(tr('v_listen')).then(()=>Voice.item('W:hello'));
     else speakStep();
   },
   pauseLesson(){ Store.saveLocal(); speechSynthesis?.cancel?.(); go('home'); },
@@ -1034,14 +1177,14 @@ const A = {
   hearRaw(t){ Voice.say(t); },
   async mic(){
     const p = UI.pr; if (!p || p.listening) return;
-    if (!Mic.supported){ p.manual = true; p.msg = 'Скажи слово вслух! Я слушаю 🐰 А потом нажми «Я сказал(а)!»'; render(); return; }
+    if (!Mic.supported){ p.manual = true; p.msg = tr('noMic'); render(); return; }
     try { speechSynthesis.cancel(); } catch(e){}
     p.listening = true; render();
     const res = await Mic.listen();
     if (UI.pr !== p) return;
     p.listening = false;
     if (res.unsupported || ['not-allowed','service-not-allowed','audio-capture','start'].includes(res.error)){
-      p.manual = true; p.msg = 'Микрофон сейчас не слушает — просто скажи слово вслух, я поверю! 😊'; render(); return;
+      p.manual = true; p.msg = tr('micOff'); render(); return;
     }
     const level = judgeSpeech(p.key, res.alts || []);
     applyPron(p, level);
@@ -1051,12 +1194,12 @@ const A = {
     const g = UI.game, r = g.r; if (r.solved) return;
     const k = r.options[i];
     if (k===r.target){
-      r.solved = true; touch(k, r.wrong.length>0); Sfx.yay(); g.msg = pick(POS); render();
+      r.solved = true; touch(k, r.wrong.length>0); Sfx.yay(); g.msg = tr('pos'); render();
       Voice.item(k).then(()=>{}); setTimeout(()=>{ if (UI.game===g && g.r===r){ g.i++; nextRound(); } }, 1500);
     } else {
       if (!r.wrong.includes(k)) r.wrong.push(k);
       r.wiggle = k; touch(r.target, true); Sfx.soft();
-      g.msg = r.wrong.length>=2 ? 'Давай вместе! Вот он ✨' : pick(RETRY);
+      g.msg = r.wrong.length>=2 ? tr('together') : tr('retry');
       render(); r.wiggle = null;
       if (GAMES[g.id].listen) setTimeout(()=>Voice.item(r.target), 500);
       else if (g.id==='count' || g.id==='findPicture') Voice.say(ITEMS[k].say);
@@ -1067,39 +1210,41 @@ const A = {
     if (r.used.includes(i) || r.placed>=word.length) return;
     if (r.tiles[i].c === word[r.placed]){
       r.used.push(i); r.placed++; r.wrongTile = -1; Sfx.tap(); Voice.say(r.tiles[i].c.toUpperCase());
-      if (r.placed===word.length){ touch(r.target, r.misses>0); Sfx.yay(); g.msg = pick(POS); render(); setTimeout(()=>Voice.item(r.target), 400); setTimeout(()=>{ if (UI.game===g && g.r===r){ g.i++; nextRound(); } }, 2000); return; }
-      g.msg = 'Так! Дальше 👉';
-    } else { r.misses++; r.wrongTile = i; Sfx.soft(); g.msg = r.misses>=2 ? 'Подсказка появилась в клеточке ✨' : pick(RETRY); render(); r.wrongTile = -1; return; }
+      if (r.placed===word.length){ touch(r.target, r.misses>0); Sfx.yay(); g.msg = tr('pos'); render(); setTimeout(()=>Voice.item(r.target), 400); setTimeout(()=>{ if (UI.game===g && g.r===r){ g.i++; nextRound(); } }, 2000); return; }
+      g.msg = tr('soFar');
+    } else { r.misses++; r.wrongTile = i; Sfx.soft(); g.msg = r.misses>=2 ? tr('hintSlot') : tr('retry'); render(); r.wrongTile = -1; return; }
     render();
   },
   mLeft(k){ const r = UI.game.r; if (r.done.includes(k)) return; r.sel = k; Sfx.tap(); Voice.item(k); render(); },
   mRight(k){
     const g = UI.game, r = g.r; if (r.done.includes(k)) return;
-    if (!r.sel){ g.msg = 'Сначала нажми на слово слева 👈'; render(); return; }
-    if (r.sel===k){ r.done.push(k); touch(k, false); r.sel = null; Sfx.yay(); g.msg = pick(POS); Voice.item(k); render();
+    if (!r.sel){ g.msg = tr('leftFirst'); render(); return; }
+    if (r.sel===k){ r.done.push(k); touch(k, false); r.sel = null; Sfx.yay(); g.msg = tr('pos'); Voice.item(k); render();
       if (r.done.length===r.keys.length) setTimeout(()=>{ if (UI.game===g){ g.i++; nextRound(); } }, 1500);
-    } else { touch(r.sel, true); r.wrong = k; Sfx.soft(); g.msg = pick(RETRY); render(); r.wrong = null; }
+    } else { touch(r.sel, true); r.wrong = k; Sfx.soft(); g.msg = tr('retry'); render(); r.wrong = null; }
   },
   gameNext(){ const g = UI.game; g.i++; nextRound(); },
   play(id){ UI.params = {play:true}; UI.screen = 'games'; const keys = Object.keys(S.progress).length ? Object.keys(S.progress) : starterKeys(); startGame(id, keys, {embedded:false}); window.scrollTo(0,0); },
   tab(t){ UI.wordsTab = t; render(); },
   region(id){ UI.wordsTab = 'W'; go('words', {region:id}); },
   card(key){
-    UI.modal = () => learnCard(key) + `<div class="row"><button class="btn" style="flex:1" onclick="A.speakWord('${key}')">🎤 Сказать</button><button class="btn soft" style="flex:1" onclick="A.closeModal()">Закрыть</button></div>`;
+    UI.modal = () => learnCard(key) + `<div class="row"><button class="btn" style="flex:1" onclick="A.speakWord('${key}')">🎤 ${tr('b_say')}</button><button class="btn soft" style="flex:1" onclick="A.closeModal()">${tr('close')}</button></div>`;
     render(); Voice.item(key);
   },
   speakWord(key){ UI.pr = newPr(key); UI.modal = null; go('speak', {key}); setTimeout(()=>Voice.item(key), 300); },
   speakNext(){ const list = speakList(); const cur = list.indexOf(UI.params.key); A.speakWord(list[(cur+1) % list.length]); },
-  gateCheck(){ const v = +($('#gate')?.value||0); if (v === UI.gate.a*UI.gate.b){ UI.gate = null; go('parent'); } else { toast('Попробуйте ещё раз'); UI.gate = null; render(); } },
-  set(k, v){ S.settings[k] = v; Store.save(); UI.preview = null; toast('Сохранено ✓'); },
-  setAge(v){ if (S.child){ S.child.age = Math.max(3, Math.min(12, +v||5)); Store.save(); toast('Сохранено ✓'); } },
-  async notifyPerm(){ if (!('Notification' in window)) return toast('Браузер не поддерживает уведомления'); const r = await Notification.requestPermission(); toast(r==='granted'?'Уведомления разрешены ✓':'Уведомления не разрешены'); },
+  gateCheck(){ const v = +($('#gate')?.value||0); if (v === UI.gate.a*UI.gate.b){ UI.gate = null; go('parent'); } else { toast(tr('gateRetry')); UI.gate = null; render(); } },
+  set(k, v){ S.settings[k] = v; Store.save(); UI.preview = null; toast(tr('saved')); },
+  setLang(v){ S.settings.ui_lang = v==='kk' ? 'kk' : 'ru'; Store.save(); render(); },
+  toggleLang(){ A.setLang(lang()==='kk' ? 'ru' : 'kk'); Sfx.tap(); },
+  setAge(v){ if (S.child){ S.child.age = Math.max(3, Math.min(12, +v||5)); Store.save(); toast(tr('saved')); } },
+  async notifyPerm(){ if (!('Notification' in window)) return toast(tr('noNotif')); const r = await Notification.requestPermission(); toast(tr(r==='granted'?'notifOk':'notifNo')); },
   async restore(){
-    const code = ($('#restore')?.value||'').trim(); if (!code) return toast('Вставьте код ребёнка');
-    try { await Cloud.restore(code); UI.lesson = null; UI.preview = null; toast('Прогресс восстановлен ✓'); go('parent'); }
-    catch(e){ toast('Не удалось восстановить: '+(e.message||'нет связи')); }
+    const code = ($('#restore')?.value||'').trim(); if (!code) return toast(tr('needCode'));
+    try { await Cloud.restore(code); UI.lesson = null; UI.preview = null; toast(tr('restored')); go('parent'); }
+    catch(e){ toast(tr('restoreFail')+(e.message||tr('noConn'))); }
   },
-  reset(){ if (!confirm('Удалить профиль и прогресс на этом устройстве?')) return; localStorage.removeItem(STORE_KEY); S = freshState(); UI.lesson = null; UI.preview = null; UI.ob = {step:0, name:'', age:5}; go('onboarding'); },
+  reset(){ if (!confirm(tr('resetConfirm'))) return; const ui = lang(); localStorage.removeItem(STORE_KEY); S = freshState(); S.settings.ui_lang = ui; UI.lesson = null; UI.preview = null; UI.ob = {step:0, name:'', age:5}; go('onboarding'); },
 };
 
 function applyPron(p, level){
@@ -1107,15 +1252,8 @@ function applyPron(p, level){
   if (level !== 'quiet') SRS.pron(p.key, level==='manual' ? 'close' : level);
   if (UI.lesson && UI.screen==='lesson') UI.lesson.touched[p.key] = !!UI.lesson.touched[p.key];
   if (UI.game && UI.game.r && UI.game.r.kind==='repeat') touch(p.key, false);
-  const msgs = {
-    great:['Отлично! 🌟 Получается всё лучше!','Ура! Здорово сказал(а)! ✨','Супер! Давай ещё раз вместе!'],
-    close:['Уже почти! Давай ещё раз вместе! 💛','Получается! Послушай и скажи ещё разок 👂'],
-    again:['Давай послушаем ещё раз 👂','Попробуем ещё раз! У тебя получится!','Теперь вместе!'],
-    quiet:['Я не расслышал 🙉 Скажи чуть громче!'],
-    manual:['Молодец, что пробуешь! 🌟 Давай ещё раз вместе!'],
-  };
-  p.msg = pick(msgs[level]);
-  if (p.attempts===1 && UI.lesson && UI.lesson.steps[UI.lesson.i]?.t==='hello') p.msg = 'Отлично! Давай ещё раз вместе! 👋';
+  p.msg = tr('pr_'+level);
+  if (p.attempts===1 && UI.lesson && UI.lesson.steps[UI.lesson.i]?.t==='hello') p.msg = tr('helloFirst');
   level==='great'||level==='manual' ? Sfx.yay() : Sfx.soft();
   Store.save(); render();
   if (level!=='great') setTimeout(()=>Voice.item(p.key), 700);
@@ -1130,7 +1268,7 @@ function enterStep(){
 function speakStep(){
   const L = UI.lesson, st = L?.steps[L.i]; if (!st) return;
   if (st.t==='learn' || st.t==='pronounce') setTimeout(()=>Voice.item(st.key), 350);
-  if (st.t==='finish'){ confetti(); Sfx.sparkle(); Voice.ru(L.first ? 'Наше первое приключение закончено! Завтра продолжим!' : 'Приключение закончено! Ты молодец!'); }
+  if (st.t==='finish'){ confetti(); Sfx.sparkle(); Voice.native(tr(L.first ? 'v_firstDone' : 'v_done')); }
 }
 function completeLesson(){
   const L = UI.lesson; if (L.completed) return;
@@ -1158,9 +1296,9 @@ setInterval(() => {
   const now = new Date(), hm = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   if (hm===S.settings.reminder && S.notified!==today() && !lessonDoneToday()){
     S.notified = today(); Store.saveLocal();
-    const text = `${S.child.name}, Хоппи ждёт тебя в новом приключении! 🐰`;
+    const text = tr('reminderText', {name:S.child.name});
     toast(text);
-    try { if ('Notification' in window && Notification.permission==='granted') new Notification('Хоппи', {body:text}); } catch(e){}
+    try { if ('Notification' in window && Notification.permission==='granted') new Notification(tr('appName'), {body:text}); } catch(e){}
   }
 }, 30000);
 
