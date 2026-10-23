@@ -191,7 +191,7 @@ export function Reader() {
   // ?listen=1 — пробуем начать озвучивание сразу (если браузер разрешит)
   useEffect(() => {
     if (params.get('listen') === '1') {
-      const timer = window.setTimeout(() => playScene(initialScene), 600);
+      const timer = window.setTimeout(() => playScene(initialScene), 50);
       return () => window.clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
