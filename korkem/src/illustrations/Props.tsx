@@ -1,5 +1,6 @@
 import type { PropKind } from '../types';
 import { shade } from './palette';
+import { Glow } from './Glow';
 
 /**
  * Библиотека персонажей и предметов. Каждый рисуется относительно точки (0,0):
@@ -23,10 +24,10 @@ const smile = (x: number, y: number, w = 4, color = '#7A3D4E') => <path d={`M${x
 const blush = (x: number, y: number) => <ellipse cx={x} cy={y} rx="3" ry="1.8" fill="#FF8FA8" opacity="0.45" />;
 const shadow = (rx: number) => <ellipse cx="0" cy="1" rx={rx} ry={rx * 0.22} fill="#1A1530" opacity="0.16" />;
 
-function Star({ uid }: P) {
+function Star(_p: P) {
   return (
     <g>
-      <circle r="30" fill="#FFE9A0" opacity="0.35" filter={`url(#${uid}-blur)`} />
+      <Glow r={54} color="#FFE9A0" opacity={0.35} />
       <path d="M0 -24 L7 -8 L24 -7 L11 4 L15 21 L0 12 L-15 21 L-11 4 L-24 -7 L-7 -8 Z" fill="#FFD866" stroke="#FFC23D" strokeWidth="2" strokeLinejoin="round" />
       <path d="M0 -18 L4 -8 L-2 -6 Z" fill="#FFF6CF" opacity="0.8" />
       {eye(-5, 1, 1.9)}
@@ -475,7 +476,7 @@ function Rocket({ uid }: P) {
   );
 }
 
-function Planet({ variant = 'earth', uid }: P) {
+function Planet({ variant = 'earth' }: P) {
   if (variant === 'saturn')
     return (
       <g>
@@ -496,7 +497,7 @@ function Planet({ variant = 'earth', uid }: P) {
     );
   return (
     <g>
-      <circle r="30" fill="#7FB8FF" opacity="0.25" filter={`url(#${uid}-blur)`} />
+      <Glow r={54} color="#7FB8FF" opacity={0.25} />
       <circle r="22" fill="#4E98E0" />
       <path d="M-14 -10 q 8 -8 16 0 q -2 10 -12 8 Z M4 6 q 10 -4 14 4 q -6 8 -14 2 Z M-12 10 q 4 -2 6 2 q -4 4 -6 -2" fill="#79C47F" />
       <circle cx="-7" cy="-8" r="10" fill="#FFFFFF" opacity="0.15" />
@@ -575,10 +576,10 @@ function Gift() {
   );
 }
 
-function Lantern({ uid }: P) {
+function Lantern(_p: P) {
   return (
     <g>
-      <circle cx="0" cy="-20" r="26" fill="#FFE3A0" opacity="0.35" filter={`url(#${uid}-blur)`} />
+      <Glow cx={0} cy={-20} r={46.8} color="#FFE3A0" opacity={0.35} />
       <path d="M-6 -42 Q 0 -50 6 -42" stroke="#8A6448" strokeWidth="2" fill="none" />
       <rect x="-11" y="-40" width="22" height="5" rx="2" fill="#8A6448" />
       <path d="M-10 -35 L10 -35 L12 -6 L-12 -6 Z" fill="#FFE9A8" opacity="0.95" />
@@ -608,7 +609,7 @@ function Flowers({ variant }: P) {
   );
 }
 
-function Mushroom({ uid }: P) {
+function Mushroom(_p: P) {
   return (
     <g>
       {shadow(14)}
@@ -617,8 +618,7 @@ function Mushroom({ uid }: P) {
       {[[-9, -22], [4, -28], [10, -19]].map(([x, y]) => (
         <circle key={`${x}${y}`} cx={x} cy={y} r="2.8" fill="#FFFFFF" />
       ))}
-      <ellipse cx="0" cy="-26" rx="22" ry="14" fill="#FFE3A0" opacity="0" filter={`url(#${uid}-blur)`} />
-    </g>
+          </g>
   );
 }
 
@@ -646,7 +646,7 @@ function Basket() {
   );
 }
 
-function Book({ uid }: P) {
+function Book(_p: P) {
   return (
     <g>
       {shadow(18)}
@@ -654,7 +654,7 @@ function Book({ uid }: P) {
       <path d="M0 -6 Q 12 -12 22 -8 L 22 -2 Q 12 -6 0 0 Z" fill="#D9557A" />
       <path d="M0 -8 Q -12 -16 -21 -12 L -21 -8 Q -12 -12 0 -6 Z" fill="#FFF7EA" />
       <path d="M0 -8 Q 12 -16 21 -12 L 21 -8 Q 12 -12 0 -6 Z" fill="#FFFFFF" />
-      <circle cx="0" cy="-16" r="10" fill="#FFE9A0" opacity="0.3" filter={`url(#${uid}-blur)`} />
+      <Glow cx={0} cy={-16} r={18} color="#FFE9A0" opacity={0.3} />
     </g>
   );
 }
@@ -687,10 +687,10 @@ function Bridge() {
   );
 }
 
-function Crown({ uid }: P) {
+function Crown(_p: P) {
   return (
     <g>
-      <circle r="24" fill="#FFE3A0" opacity="0.35" filter={`url(#${uid}-blur)`} />
+      <Glow r={43.2} color="#FFE3A0" opacity={0.35} />
       <path d="M-18 10 L-20 -10 L-9 0 L0 -16 L9 0 L20 -10 L18 10 Z" fill="#FFD66B" stroke="#E8B53E" strokeWidth="1.5" strokeLinejoin="round" />
       <rect x="-18" y="8" width="36" height="6" rx="2" fill="#F0BF45" />
       <circle cx="0" cy="-2" r="3" fill="#F29BB5" />
@@ -700,20 +700,20 @@ function Crown({ uid }: P) {
   );
 }
 
-function Key({ uid }: P) {
+function Key(_p: P) {
   return (
     <g transform="rotate(-30)">
-      <circle r="16" fill="#FFE3A0" opacity="0.4" filter={`url(#${uid}-blur)`} />
+      <Glow r={28.8} color="#FFE3A0" opacity={0.4} />
       <circle cx="-10" cy="0" r="7" fill="none" stroke="#FFD66B" strokeWidth="3.5" />
       <path d="M-3 0 L16 0 M10 0 L10 6 M15 0 L15 5" stroke="#FFD66B" strokeWidth="3.5" strokeLinecap="round" />
     </g>
   );
 }
 
-function Shell({ variant, uid }: P) {
+function Shell({ variant }: P) {
   return (
     <g>
-      {variant === 'pearl' && <circle cx="0" cy="-12" r="24" fill="#FFFFFF" opacity="0.45" filter={`url(#${uid}-blur)`} />}
+      {variant === 'pearl' && <Glow cx={0} cy={-12} r={43.2} color="#FFFFFF" opacity={0.45} />}
       <path d="M-18 0 Q -20 -22 0 -24 Q 20 -22 18 0 Z" fill="#F7C9D6" />
       {[-12, -6, 0, 6, 12].map((x) => (
         <path key={x} d={`M${x * 0.3} -2 L${x} -21`} stroke="#E7A2B6" strokeWidth="1.4" />
@@ -741,10 +741,10 @@ function Cloud({ uid }: P) {
   );
 }
 
-function MoonFace({ uid }: P) {
+function MoonFace(_p: P) {
   return (
     <g>
-      <circle r="38" fill="#FFF4D2" opacity="0.3" filter={`url(#${uid}-blur)`} />
+      <Glow r={68.4} color="#FFF4D2" opacity={0.3} />
       <circle r="24" fill="#FFF0BF" />
       <circle cx="-8" cy="-10" r="3.5" fill="#F1DFA5" />
       <circle cx="10" cy="10" r="4.5" fill="#F1DFA5" />
@@ -811,17 +811,17 @@ function Blocks() {
   );
 }
 
-function Heart({ uid }: P) {
+function Heart(_p: P) {
   return (
     <g>
-      <circle r="18" fill="#FFB3C7" opacity="0.4" filter={`url(#${uid}-blur)`} />
+      <Glow r={32.4} color="#FFB3C7" opacity={0.4} />
       <path d="M0 10 C -18 -2, -14 -18, 0 -9 C 14 -18, 18 -2, 0 10 Z" fill="#F27A9B" />
       <ellipse cx="-6" cy="-6" rx="3" ry="2" fill="#FFFFFF" opacity="0.6" />
     </g>
   );
 }
 
-function Snail({ uid }: P) {
+function Snail(_p: P) {
   return (
     <g>
       {shadow(16)}
@@ -832,7 +832,7 @@ function Snail({ uid }: P) {
       <circle cx="16" cy="-28" r="1.6" fill="#2A2238" />
       <circle cx="24" cy="-28" r="1.6" fill="#2A2238" />
       <g transform="translate(-2 -32)">
-        <circle r="10" fill="#FFE3A0" opacity="0.5" filter={`url(#${uid}-blur)`} />
+        <Glow r={18} color="#FFE3A0" opacity={0.5} />
         <rect x="-3" y="-4" width="6" height="7" rx="2" fill="#FFE9A8" />
       </g>
     </g>

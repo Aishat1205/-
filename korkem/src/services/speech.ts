@@ -191,17 +191,28 @@ class WebSpeechProvider implements SpeechProvider {
   }
 }
 
-function rank(v: SpeechVoice) {
+/** Чем выше оценка, тем естественнее звучит голос. Голоса «улучшенные» и сетевые звучат заметно живее. */
+function voiceScore(name: string, lang: string) {
   let r = 0;
-  if (v.lang.toLowerCase().startsWith('ru')) r += 10;
-  if (v.lang.toLowerCase().startsWith('kk')) r += 5;
-  if (/milena|katya|alena|irina|premium|enhanced|natural|google/i.test(v.name)) r += 2;
+  const l = lang.toLowerCase();
+  if (l.startsWith('ru')) r += 20;
+  else if (l.startsWith('kk')) r += 10;
+  if (/premium|премиум/i.test(name)) r += 8;
+  if (/enhanced|улучш/i.test(name)) r += 6;
+  if (/natural|online/i.test(name)) r += 6; // Microsoft Edge: «Svetlana Online (Natural)»
+  if (/google/i.test(name)) r += 5; // Chrome: сетевой голос Google
+  if (/milena|милена|katya|катя|alena|svetlana|dariya|irina/i.test(name)) r += 2;
+  if (/compact|eloquence|grandma|grandpa|rocko|shelley|eddy|flo|reed|sandy/i.test(name)) r -= 6;
   return r;
 }
 
+function rank(v: SpeechVoice) {
+  return voiceScore(v.name, v.lang);
+}
+
 function pickDefaultVoice(voices: SpeechSynthesisVoice[], lang: string) {
-  const ru = voices.filter((v) => v.lang.toLowerCase().startsWith(lang));
-  return ru.find((v) => /milena|katya|alena|enhanced|premium/i.test(v.name)) ?? ru[0] ?? null;
+  const list = voices.filter((v) => v.lang.toLowerCase().startsWith(lang));
+  return list.sort((a, b) => voiceScore(b.name, b.lang) - voiceScore(a.name, a.lang))[0] ?? null;
 }
 
 let provider: SpeechProvider | null = null;

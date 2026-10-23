@@ -94,7 +94,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [history, setHistory] = useState<HistoryEntry[]>(() => load('history', []));
   const [lastStoryId, setLastStoryId] = useState<string | null>(() => load('lastStory', null));
   const [generated, setGenerated] = useState<FairyTale[]>([]);
-  const [serverStatus, setServerStatus] = useState<ServerStatus>({ story: false, illustration: false, model: null });
+  const [serverStatus, setServerStatus] = useState<ServerStatus>({ story: false, illustration: false, model: null, tts: null });
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [systemReduced, setSystemReduced] = useState(() => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const toastId = useRef(0);

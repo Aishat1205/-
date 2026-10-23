@@ -1,4 +1,5 @@
 import type { SettingId, TimeOfDay } from '../types';
+import { Glow } from './Glow';
 import { SKY, indoorFloor, indoorWall, shade, mix, type SkyPalette } from './palette';
 
 interface Props {
@@ -52,26 +53,32 @@ function Sky({ p, uid }: { p: SkyPalette; uid: string }) {
   );
 }
 
-function Celestial({ p, uid, x = 318, y = 62 }: { p: SkyPalette; uid: string; x?: number; y?: number }) {
+function Celestial({ p, x = 318, y = 62 }: { p: SkyPalette; uid?: string; x?: number; y?: number }) {
   if (p.sun === 'sun')
     return (
       <g transform={`translate(${x} ${y})`}>
-        <circle r="46" fill="#FFF3C4" opacity="0.35" filter={`url(#${uid}-blur)`} />
-        <circle r="22" fill="#FFE59A" />
-        <circle r="22" fill="#FFF6D6" opacity="0.5" transform="translate(-5 -5) scale(0.6)" />
+        <g opacity="0.2">
+          {Array.from({ length: 12 }, (_, i) => (
+            <path key={i} d="M-6 0 L6 0 L1.5 -150 L-1.5 -150 Z" fill="#FFF6C9" transform={`rotate(${i * 30 + 8})`} />
+          ))}
+        </g>
+        <Glow r={126} color="#FFF3B0" opacity={0.35} />
+        <circle r="26" fill="#FFE06B" />
+        <circle r="22" fill="#FFF1A6" />
+        <circle r="12" fill="#FFFBE6" opacity="0.8" transform="translate(-5 -5)" />
       </g>
     );
   if (p.sun === 'low-sun')
     return (
       <g transform={`translate(${x - 30} 172)`}>
-        <circle r="60" fill="#FFD59A" opacity="0.4" filter={`url(#${uid}-blur)`} />
+        <Glow r={108} color="#FFD59A" opacity={0.4} />
         <circle r="26" fill="#FFC98A" />
       </g>
     );
   if (p.sun === 'moon')
     return (
       <g transform={`translate(${x} ${y})`}>
-        <circle r="40" fill="#C9CCFF" opacity="0.25" filter={`url(#${uid}-blur)`} />
+        <Glow r={72} color="#C9CCFF" opacity={0.25} />
         <circle r="18" fill="#FFF4D2" />
         <circle r="18" fill={p.top} transform="translate(8 -5)" opacity="0.95" />
       </g>
@@ -97,36 +104,88 @@ function Clouds({ y = 70, tint = '#FFFFFF', opacity = 0.85, uid }: { y?: number;
 
 function Hills({ p, uid, flowers = true, seed = 3 }: { p: SkyPalette; uid: string; flowers?: boolean; seed?: number }) {
   const r = prng(seed);
+  const night = p.star;
   return (
     <g>
-      <path d="M0 196 C 60 170, 120 176, 180 188 S 300 168, 400 186 L400 300 L0 300 Z" fill={p.far} opacity="0.9" />
-      <path d="M0 214 C 80 196, 150 206, 220 212 S 330 196, 400 208 L400 300 L0 300 Z" fill={p.near} />
       <defs>
+        <linearGradient id={`${uid}-far`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor={shade(p.far, 0.12)} />
+          <stop offset="1" stopColor={shade(p.far, -0.12)} />
+        </linearGradient>
+        <linearGradient id={`${uid}-near`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor={shade(p.near, 0.18)} />
+          <stop offset="0.6" stopColor={p.near} />
+          <stop offset="1" stopColor={shade(p.near, -0.2)} />
+        </linearGradient>
         <linearGradient id={`${uid}-ground`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor={p.ground[0]} />
+          <stop offset="0" stopColor={shade(p.ground[0], 0.12)} />
+          <stop offset="0.45" stopColor={p.ground[0]} />
           <stop offset="1" stopColor={p.ground[1]} />
         </linearGradient>
+        <linearGradient id={`${uid}-haze`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor={p.bottom} stopOpacity="0" />
+          <stop offset="1" stopColor={p.bottom} stopOpacity={night ? 0.15 : 0.45} />
+        </linearGradient>
       </defs>
+      <path d="M0 196 C 60 170, 120 176, 180 188 S 300 168, 400 186 L400 300 L0 300 Z" fill={`url(#${uid}-far)`} />
+      <rect y="170" width="400" height="40" fill={`url(#${uid}-haze)`} />
+      <path d="M0 214 C 80 196, 150 206, 220 212 S 330 196, 400 208 L400 300 L0 300 Z" fill={`url(#${uid}-near)`} />
+      <path d="M0 214 C 80 196, 150 206, 220 212 S 330 196, 400 208" stroke={shade(p.near, 0.35)} strokeWidth="1.5" fill="none" opacity={night ? 0.25 : 0.6} />
       <path d="M0 232 C 100 222, 200 228, 280 226 S 360 222, 400 226 L400 300 L0 300 Z" fill={`url(#${uid}-ground)`} />
-      {flowers &&
-        Array.from({ length: 26 }, (_, i) => {
+      {/* пятна света и тени на траве */}
+      <ellipse cx="120" cy="262" rx="90" ry="14" fill="#FFFFFF" opacity={night ? 0.03 : 0.1} />
+      <ellipse cx="320" cy="288" rx="110" ry="16" fill="#0B2A1A" opacity="0.1" />
+      {/* травинки */}
+      <g stroke={shade(p.ground[1], -0.15)} strokeWidth="1.3" strokeLinecap="round" opacity={night ? 0.5 : 0.75}>
+        {Array.from({ length: 70 }, (_, i) => {
           const x = r() * 400;
-          const y = 236 + r() * 60;
-          const c = ['#FFFFFF', '#FFD6E5', '#FFE58F', '#D7C8FF'][i % 4];
-          return <circle key={i} cx={x} cy={y} r={1.4 + r() * 1.2} fill={c} opacity={p.star ? 0.5 : 0.9} />;
+          const y = 234 + r() * 66;
+          const h = 4 + r() * 6;
+          return <path key={i} d={`M${x} ${y} q ${r() * 2 - 1} ${-h / 2} ${r() * 4 - 2} ${-h}`} fill="none" />;
+        })}
+      </g>
+      {flowers &&
+        Array.from({ length: 30 }, (_, i) => {
+          const x = r() * 400;
+          const y = 238 + r() * 58;
+          const c = ['#FFFFFF', '#FF9EC4', '#FFD84D', '#C9A8FF', '#FF8A7A'][i % 5];
+          const s = 1.6 + r() * 1.6;
+          return (
+            <g key={`f${i}`} opacity={night ? 0.55 : 1}>
+              <circle cx={x - s * 0.8} cy={y} r={s * 0.75} fill={c} />
+              <circle cx={x + s * 0.8} cy={y} r={s * 0.75} fill={c} />
+              <circle cx={x} cy={y - s * 0.8} r={s * 0.75} fill={c} />
+              <circle cx={x} cy={y + s * 0.8} r={s * 0.75} fill={c} />
+              <circle cx={x} cy={y} r={s * 0.5} fill="#FFC93C" />
+            </g>
+          );
         })}
     </g>
   );
 }
 
 function Tree({ x, y, s, color, trunk }: { x: number; y: number; s: number; color: string; trunk: string }) {
+  const id = `t${Math.round(x)}${Math.round(y)}${color.slice(1, 4)}`;
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
-      <rect x="-4" y="-40" width="8" height="40" rx="3" fill={trunk} />
-      <circle cx="0" cy="-52" r="22" fill={color} />
-      <circle cx="-14" cy="-40" r="15" fill={color} />
-      <circle cx="14" cy="-42" r="16" fill={color} />
-      <circle cx="-6" cy="-60" r="10" fill={shade(color, 0.15)} opacity="0.7" />
+      <defs>
+        <radialGradient id={id} cx="0.35" cy="0.3" r="0.8">
+          <stop offset="0" stopColor={shade(color, 0.3)} />
+          <stop offset="0.55" stopColor={color} />
+          <stop offset="1" stopColor={shade(color, -0.3)} />
+        </radialGradient>
+      </defs>
+      <ellipse cx="0" cy="1" rx="18" ry="3" fill="#000" opacity="0.12" />
+      <path d="M-4 0 L-3 -42 L3 -42 L4 0 Z" fill={trunk} />
+      <path d="M1 0 L2 -42 L3 -42 L4 0 Z" fill={shade(trunk, -0.25)} />
+      <g fill={`url(#${id})`}>
+        <circle cx="0" cy="-54" r="22" />
+        <circle cx="-15" cy="-41" r="15" />
+        <circle cx="15" cy="-43" r="16" />
+        <circle cx="4" cy="-68" r="12" />
+      </g>
+      <circle cx="-8" cy="-64" r="7" fill={shade(color, 0.4)} opacity="0.55" />
+      <circle cx="-17" cy="-46" r="4" fill={shade(color, 0.4)} opacity="0.45" />
     </g>
   );
 }
@@ -282,8 +341,8 @@ function Room({ setting, time, uid }: Props) {
 
 function Forest({ p, uid, time }: { p: SkyPalette; uid: string; time: TimeOfDay }) {
   const night = time === 'night';
-  const farTree = mix(p.far, '#2F5E4E', 0.35);
-  const nearTree = mix(p.near, '#2C5A42', 0.45);
+  const farTree = mix(p.far, '#2E7A4A', 0.55);
+  const nearTree = mix(p.near, '#22603A', 0.5);
   return (
     <g>
       {[20, 70, 120, 175, 230, 285, 335, 385].map((x, i) => (
@@ -501,7 +560,7 @@ function MoonSurface({ uid }: { uid: string }) {
       <g transform="translate(320 64)">
         <circle r="22" fill="#5FA8E8" />
         <path d="M-12 -8 q 8 -6 14 2 q -4 8 -14 -2 M2 8 q 8 -2 10 6 q -8 4 -10 -6" fill="#7DC58A" />
-        <circle r="30" fill="#7FB8FF" opacity="0.25" filter={`url(#${uid}-blur)`} />
+        <Glow r={54} color="#7FB8FF" opacity={0.25} />
       </g>
       <path d="M0 214 C 90 196, 190 210, 270 202 S 370 196, 400 204 L400 300 L0 300 Z" fill="#B9BED6" />
       <path d="M0 246 C 120 236, 240 246, 400 238 L400 300 L0 300 Z" fill="#9EA3C0" />

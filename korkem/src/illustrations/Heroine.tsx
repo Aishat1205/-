@@ -1,5 +1,5 @@
 import type { Appearance, HeroinePlacement, Pose } from '../types';
-import { shade } from './palette';
+import { mix, shade } from './palette';
 
 /**
  * Главная героиня. Внешность берётся из профиля (цвет кожи, волос, причёска,
@@ -245,9 +245,14 @@ function Head({ a, uid, outfit, closedEyes = false }: { a: Appearance; uid: stri
   return (
     <g>
       <defs>
-        <radialGradient id={gid} cx="0.4" cy="0.35" r="0.75">
-          <stop offset="0" stopColor={shade(a.skinTone, 0.1)} />
-          <stop offset="1" stopColor={shade(a.skinTone, -0.08)} />
+        <radialGradient id={gid} cx="0.38" cy="0.32" r="0.8">
+          <stop offset="0" stopColor={shade(a.skinTone, 0.16)} />
+          <stop offset="0.6" stopColor={a.skinTone} />
+          <stop offset="1" stopColor={mix(a.skinTone, '#C9706A', 0.22)} />
+        </radialGradient>
+        <radialGradient id={`${gid}-iris`} cx="0.5" cy="0.35" r="0.7">
+          <stop offset="0" stopColor={shade(a.eyeColor, 0.35)} />
+          <stop offset="1" stopColor={shade(a.eyeColor, -0.35)} />
         </radialGradient>
       </defs>
       {outfit === 'space' && <circle cx="0" cy={cy} r="36" fill="#DDF1FF" opacity="0.25" stroke="#FFFFFF" strokeOpacity="0.7" strokeWidth="1.5" />}
@@ -266,10 +271,14 @@ function Head({ a, uid, outfit, closedEyes = false }: { a: Appearance; uid: stri
         <g>
           {[-9, 9].map((x) => (
             <g key={x}>
-              <ellipse cx={x} cy={cy + 2} rx="3.6" ry="4.6" fill={a.eyeColor} />
-              <ellipse cx={x} cy={cy + 2.6} rx="2.2" ry="3" fill="#1E1A2E" opacity="0.6" />
-              <circle cx={x + 1.2} cy={cy + 0.4} r="1.3" fill="#FFFFFF" />
-              <path d={`M${x - 3.5} ${cy - 5.5} q 3.5 -2.2 7 0`} stroke={shade(hair, -0.2)} strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.45" />
+              <ellipse cx={x} cy={cy + 2} rx="4.6" ry="5.6" fill="#FFFFFF" />
+              <ellipse cx={x + 0.3} cy={cy + 2.4} rx="3.9" ry="4.9" fill={`url(#${gid}-iris)`} />
+              <ellipse cx={x + 0.3} cy={cy + 2.8} rx="2" ry="2.5" fill="#15101F" />
+              <circle cx={x + 1.6} cy={cy + 0.4} r="1.5" fill="#FFFFFF" />
+              <circle cx={x - 1.2} cy={cy + 4.6} r="0.7" fill="#FFFFFF" opacity="0.85" />
+              <path d={`M${x - 4.8} ${cy - 1.8} q 4.8 -5.8 9.6 0`} stroke="#2A1B22" strokeWidth="1.1" fill="none" strokeLinecap="round" />
+              <path d={`M${x + (x > 0 ? 4.6 : -4.6)} ${cy - 1.2} l ${x > 0 ? 1.8 : -1.8} -1.4`} stroke="#2A1B22" strokeWidth="1.1" strokeLinecap="round" />
+              <path d={`M${x - 3.5} ${cy - 6.5} q 3.5 -2.2 7 0`} stroke={shade(hair, -0.2)} strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.45" />
             </g>
           ))}
         </g>
