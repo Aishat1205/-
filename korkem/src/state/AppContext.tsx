@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { AppSettings, ChildProfile, FairyTale, FavoriteStory, HistoryEntry, ReadingProgress } from '../types';
 import { LIBRARY } from '../data/stories';
+import { withPaintedArt } from '../data/paintedArt';
 import { declineName, renderText, type Persona } from '../lib/grammar';
 import { load, removeAll, save, setStorageErrorListener } from '../lib/storage';
 import { idbAll, idbClear, idbDelete, idbSet } from '../lib/idb';
@@ -36,6 +37,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   musicVolume: 0.35,
   musicTrack: 'stars',
   animationsEnabled: true,
+  artStyle: 'painted',
   soundEnabled: true,
   fontSize: 'l',
   readingMode: 'self',
@@ -141,7 +143,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const persona = useMemo<Persona>(() => ({ forms: profile.nameForms, gender: profile.gender }), [profile.nameForms, profile.gender]);
   const t = useCallback((text: string, story?: FairyTale) => renderText(text, story?.hero ?? persona), [persona]);
 
-  const stories = useMemo(() => [...generated, ...LIBRARY], [generated]);
+  const stories = useMemo(
+    () => [...generated, ...(settings.artStyle === 'painted' ? LIBRARY.map(withPaintedArt) : LIBRARY)],
+    [generated, settings.artStyle],
+  );
   const getStory = useCallback((id: string) => stories.find((s) => s.id === id), [stories]);
 
   const updateProfile = useCallback((patch: Partial<ChildProfile>) => {
