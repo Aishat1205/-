@@ -3,8 +3,10 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Heart, Home, Library, Moon, Music, Pause, Play, RotateCcw, SlidersHorizontal, Square, Volume2, X, Mic } from 'lucide-react';
 import { useApp } from '../state/AppContext';
+import { VoicePicker } from '../components/VoicePicker';
 import { SceneArt } from '../illustrations/SceneArt';
-import { createSpeechProvider, type SpeechVoice } from '../services/speech';
+import { createSpeechProvider, type SpeechProvider, type SpeechVoice } from '../services/speech';
+import { getCloudSpeech } from '../services/cloudSpeech';
 import { loadRecording } from '../services/recorder';
 import { music, MUSIC_TRACKS } from '../services/music';
 import { toSpeechText } from '../lib/grammar';
@@ -18,9 +20,12 @@ export function Reader() {
   const [params] = useSearchParams();
   const nav = useNavigate();
   const app = useApp();
-  const { getStory, t, profile, settings, updateSettings, progress, saveProgress, markOpened, isFavorite, toggleFavorite, notify, reducedMotion } = app;
+  const { getStory, t, profile, settings, updateSettings, progress, saveProgress, markOpened, isFavorite, toggleFavorite, notify, reducedMotion, serverStatus } = app;
   const story = getStory(id);
   const speech = useMemo(() => createSpeechProvider(), []);
+  const cloud = useMemo(() => getCloudSpeech(), []);
+  const voiceRef = useRef<SpeechProvider>(speech);
+  const cloudReady = !!serverStatus.tts;
 
   const initialScene = useMemo(() => {
     const q = params.get('scene');
@@ -62,6 +67,7 @@ export function Reader() {
     if (advanceTimer.current) window.clearTimeout(advanceTimer.current);
     advanceTimer.current = null;
     speech.stop();
+    cloud.stop();
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = '';
@@ -156,27 +162,45 @@ export function Reader() {
       } else {
         setSourceLabel('');
       }
+      const rate = bedtime ? Math.min(s.speechRate, 0.85) : s.speechRate;
+      const spoken = toSpeechText(t(scene.text, story));
+      const handlers = {
+        onStart: () => setPlayState('playing'),
+        onEnd: onNarrationEnd,
+        onError: (m: string) => {
+          setPlayState('idle');
+          chainRef.current = false;
+          notify(m, 'error');
+        },
+      };
+      if (s.voiceSource === 'cloud' && cloudReady) {
+        voiceRef.current = cloud;
+        setSourceLabel('Живой голос');
+        cloud.speak(spoken, { rate, volume: s.speechVolume, voiceId: null }, {
+          ...handlers,
+          onError: (m) => {
+            // Если живой голос недоступен — читает голос браузера
+            if (!speech.isSupported()) return handlers.onError(m);
+            notify(`${m} Читает голос браузера.`, 'info');
+            voiceRef.current = speech;
+            setSourceLabel('');
+            speech.speak(spoken, { rate, volume: s.speechVolume, voiceId: s.voiceURI }, handlers);
+          },
+        });
+        const next = story.scenes[i + 1];
+        if (next) cloud.prefetch(toSpeechText(t(next.text, story)), rate);
+        return;
+      }
+      voiceRef.current = speech;
       if (!speech.isSupported()) {
         setPlayState('idle');
         chainRef.current = false;
         notify('Этот браузер не умеет озвучивать текст. Сказку можно читать вслух самостоятельно.', 'error');
         return;
       }
-      speech.speak(
-        toSpeechText(t(scene.text, story)),
-        { rate: bedtime ? Math.min(s.speechRate, 0.85) : s.speechRate, volume: s.speechVolume, voiceId: s.voiceURI },
-        {
-          onStart: () => setPlayState('playing'),
-          onEnd: onNarrationEnd,
-          onError: (m) => {
-            setPlayState('idle');
-            chainRef.current = false;
-            notify(m, 'error');
-          },
-        },
-      );
+      speech.speak(spoken, { rate, volume: s.speechVolume, voiceId: s.voiceURI }, handlers);
     },
-    [story, stopAudio, speech, t, notify, onNarrationEnd, bedtime],
+    [story, stopAudio, speech, cloud, cloudReady, t, notify, onNarrationEnd, bedtime],
   );
 
   // Продолжение цепочки при автопереходе
@@ -191,7 +215,7 @@ export function Reader() {
   // ?listen=1 — пробуем начать озвучивание сразу (если браузер разрешит)
   useEffect(() => {
     if (params.get('listen') === '1') {
-      const timer = window.setTimeout(() => playScene(initialScene), 600);
+      const timer = window.setTimeout(() => playScene(initialScene), 50);
       return () => window.clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -200,13 +224,13 @@ export function Reader() {
   const togglePlay = () => {
     if (playState === 'playing') {
       if (audioRef.current && audioUrl.current) audioRef.current.pause();
-      else speech.pause();
+      else voiceRef.current.pause();
       setPlayState('paused');
       return;
     }
     if (playState === 'paused') {
       if (audioRef.current && audioUrl.current) audioRef.current.play().catch(() => {});
-      else speech.resume();
+      else voiceRef.current.resume();
       setPlayState('playing');
       return;
     }
@@ -462,7 +486,7 @@ function ReaderPanel({ open, onClose, settings, update, speechVoices, musicOn, o
             </div>
 
             <p className="mt-4 mb-2 flex items-center gap-1.5 text-sm font-bold text-ink-soft"><Volume2 className="h-4 w-4" /> Голос</p>
-            <Segmented ariaLabel="Источник голоса" value={settings.voiceSource} onChange={(v) => update({ voiceSource: v })} options={[{ id: 'tts', label: 'Синтез речи' }, { id: 'parent', label: 'Папа читает' }]} />
+            <VoicePicker />
             {speechVoices.isSupported() ? (
               <>
                 <label className="mt-3 block text-sm font-bold text-ink-soft" htmlFor="voice">Голос синтезатора</label>

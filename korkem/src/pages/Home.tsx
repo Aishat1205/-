@@ -38,8 +38,8 @@ export function Home() {
   const greeting = hour < 5 ? 'Доброй ночи' : hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
 
   const start = () => {
-    if (last && lastProg && !lastProg.completed) nav(`/read/${last.id}`);
-    else nav(`/read/${daily.id}`);
+    if (last && lastProg && !lastProg.completed) nav(`/read/${last.id}?listen=1`);
+    else nav(`/read/${daily.id}?listen=1`);
   };
 
   return (

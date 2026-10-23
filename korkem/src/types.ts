@@ -50,7 +50,7 @@ export interface ChildProfile {
 
 export type FontSize = 'm' | 'l' | 'xl';
 export type ReadingMode = 'self' | 'child';
-export type VoiceSource = 'tts' | 'parent' | 'none';
+export type VoiceSource = 'tts' | 'cloud' | 'parent' | 'none';
 
 export interface AppSettings {
   language: LanguageCode;

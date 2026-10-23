@@ -16,6 +16,9 @@ const BASE_SCALE: Partial<Record<PropKind, number>> = {
   heart: 1.2, snail: 1.3, frog: 1.3, pillow: 1.2,
 };
 
+/** Предметы, которым объёмная подсветка не нужна (они и так светятся или прозрачные). */
+const NO_VOLUME: PropKind[] = ['rainbow', 'comet', 'star', 'moonface', 'cloud', 'heart', 'bridge'];
+
 interface Props {
   spec: IllustrationSpec;
   appearance: Appearance;
@@ -46,7 +49,9 @@ function SceneArtInner({ spec, appearance, animate = true, className, label }: P
         <g key={`p${i}`} transform={`translate(${x} ${y})`}>
           <g className={p.float && animate ? 'anim-float' : undefined} style={p.float ? { animationDelay: `${(i * 0.7) % 3}s` } : undefined}>
             <g transform={`scale(${p.flip ? -s : s} ${s})`} filter={p.glow ? `url(#${uid}-glowsoft)` : undefined}>
-              <PropShape kind={p.kind} variant={p.variant} uid={uid} />
+              <g filter={animate && !NO_VOLUME.includes(p.kind) ? `url(#${uid}-vol)` : undefined}>
+                <PropShape kind={p.kind} variant={p.variant} uid={uid} />
+              </g>
             </g>
           </g>
         </g>
@@ -65,7 +70,7 @@ function SceneArtInner({ spec, appearance, animate = true, className, label }: P
       node: (
         <g key="hero" transform={`translate(${x} ${y})`}>
           <g className={animate && h.pose === 'jump' ? 'anim-bounce' : animate && h.pose !== 'sleep' ? 'anim-breathe' : undefined}>
-            <g transform={`scale(${h.flip ? -s : s} ${s})`}>
+            <g transform={`scale(${h.flip ? -s : s} ${s})`} filter={animate ? `url(#${uid}-vol)` : undefined}>
               <Heroine placement={h} appearance={appearance} uid={uid} />
             </g>
           </g>
@@ -93,19 +98,48 @@ function SceneArtInner({ spec, appearance, animate = true, className, label }: P
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <filter id={`${uid}-glowsoft`} x="-60%" y="-60%" width="220%" height="220%">
+        <filter id={`${uid}-glowsoft`} x="-120%" y="-120%" width="340%" height="340%">
           <feGaussianBlur stdDeviation="3" result="b" />
-          <feColorMatrix in="b" type="matrix" values="1 0 0 0 0.25  0 1 0 0 0.2  0 0 1 0 0  0 0 0 0.9 0" result="g" />
+          <feColorMatrix in="b" type="matrix" values="1 0 0 0.25 0  0 1 0 0.2 0  0 0 1 0 0  0 0 0 0.9 0" result="g" />
           <feMerge>
             <feMergeNode in="g" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        <filter id={`${uid}-blur`} x="-50%" y="-50%" width="200%" height="200%">
+        <filter id={`${uid}-blur`} x="-150%" y="-150%" width="400%" height="400%">
           <feGaussianBlur stdDeviation="8" />
         </filter>
         <filter id={`${uid}-soft`} x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="1.1" />
+        </filter>
+        {/* Объём: мягкая тень по нижнему правому краю и блик сверху слева */}
+        <filter id={`${uid}-vol`} x="-15%" y="-15%" width="130%" height="130%" colorInterpolationFilters="sRGB">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="3.2" result="b" />
+          <feOffset in="b" dx="-3.5" dy="-4" result="o1" />
+          <feComposite in="SourceAlpha" in2="o1" operator="out" result="rimDark" />
+          <feFlood floodColor="#2A1850" floodOpacity="0.32" />
+          <feComposite in2="rimDark" operator="in" result="shadow" />
+          <feOffset in="b" dx="3" dy="3.5" result="o2" />
+          <feComposite in="SourceAlpha" in2="o2" operator="out" result="rimLight" />
+          <feFlood floodColor="#FFF6DD" floodOpacity="0.38" />
+          <feComposite in2="rimLight" operator="in" result="light" />
+          {/* Ночью персонажи чуть темнее и холоднее, чтобы вписывались в сцену */}
+          <feColorMatrix
+            in="SourceGraphic"
+            type="matrix"
+            values={night ? '0.74 0 0 0 0.02  0 0.76 0 0 0.03  0 0 0.86 0 0.08  0 0 0 1 0' : '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0'}
+            result="tinted"
+          />
+          <feMerge>
+            <feMergeNode in="tinted" />
+            <feMergeNode in="shadow" />
+            <feMergeNode in="light" />
+          </feMerge>
+        </filter>
+        {/* Фактура бумаги и красок */}
+        <filter id={`${uid}-paper`} x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" stitchTiles="stitch" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.42  0 0 0 0 0.35  0 0 0 0.9 0" />
         </filter>
         <radialGradient id={`${uid}-vig`} cx="0.5" cy="0.45" r="0.75">
           <stop offset="0.6" stopColor="#000" stopOpacity="0" />
@@ -124,6 +158,7 @@ function SceneArtInner({ spec, appearance, animate = true, className, label }: P
           <Backdrop setting={spec.setting} time={time} uid={uid} />
           {items.map((it) => it.node)}
           <Fx kinds={spec.fx ?? []} heroX={heroX} uid={uid} indoor={indoor} />
+          {animate && <rect width="400" height="300" filter={`url(#${uid}-paper)`} opacity="0.07" style={{ mixBlendMode: 'multiply' }} />}
         </>
       )}
       <rect width="400" height="300" fill={`url(#${uid}-light)`} style={{ mixBlendMode: 'soft-light' }} />

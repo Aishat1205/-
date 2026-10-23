@@ -14,10 +14,10 @@ export interface SkyPalette {
 }
 
 export const SKY: Record<TimeOfDay, SkyPalette> = {
-  day: { top: '#8EC9F0', mid: '#BFE3F7', bottom: '#FFF4DE', light: '#FFF7D6', lightOpacity: 0.25, ground: ['#9CCB7E', '#6FAF68'], far: '#B5D9C3', near: '#8FC48A', star: false, sun: 'sun' },
-  sunset: { top: '#6F62B0', mid: '#E99CA5', bottom: '#FFD9A8', light: '#FFB98A', lightOpacity: 0.28, ground: ['#9DB884', '#6E9469'], far: '#B49BC2', near: '#8BA47E', star: false, sun: 'low-sun' },
-  night: { top: '#141A43', mid: '#2C2E6E', bottom: '#5A4F93', light: '#9FA8FF', lightOpacity: 0.18, ground: ['#3D5A6A', '#273E4F'], far: '#3A3F78', near: '#2F4A5C', star: true, sun: 'moon' },
-  dawn: { top: '#A8B8EC', mid: '#E9C6E0', bottom: '#FFE3CF', light: '#FFE9D6', lightOpacity: 0.22, ground: ['#A5CB92', '#7DB07C'], far: '#C6C9E6', near: '#9CC394', star: false, sun: 'low-sun' },
+  day: { top: '#4FA8EC', mid: '#9DD6F7', bottom: '#FFF1CF', light: '#FFF2B8', lightOpacity: 0.32, ground: ['#7CC45C', '#3F9447'], far: '#8FC9B0', near: '#62B25A', star: false, sun: 'sun' },
+  sunset: { top: '#5B4BB0', mid: '#F08A9C', bottom: '#FFC47A', light: '#FF9F6B', lightOpacity: 0.34, ground: ['#8DB566', '#4F8452'], far: '#A07FBF', near: '#6E9C5E', star: false, sun: 'low-sun' },
+  night: { top: '#0B1240', mid: '#26287A', bottom: '#5D45A0', light: '#8C9BFF', lightOpacity: 0.22, ground: ['#2F5B6E', '#1B3447'], far: '#33378A', near: '#24506A', star: true, sun: 'moon' },
+  dawn: { top: '#8CA6F0', mid: '#F2B8DA', bottom: '#FFDDB8', light: '#FFE2C2', lightOpacity: 0.28, ground: ['#8FD07A', '#55A363'], far: '#B7BDEB', near: '#7DC27E', star: false, sun: 'low-sun' },
 };
 
 export interface SettingStyle {

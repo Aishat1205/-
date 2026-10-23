@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronRight, Database, Info, Languages, Music, Sparkles, Type, Volume2, Wand2 } from 'lucide-react';
 import { useApp } from '../state/AppContext';
+import { VoicePicker } from '../components/VoicePicker';
 import { Card, ConfirmDialog, PageHeader, Segmented, Toggle } from '../components/ui';
 import { music, MUSIC_TRACKS } from '../services/music';
 import { createSpeechProvider } from '../services/speech';
@@ -87,10 +88,8 @@ export function Settings() {
             <Toggle label="Звук в приложении" hint="Озвучивание, голос родителя и музыка" checked={settings.soundEnabled} onChange={(v) => updateSettings({ soundEnabled: v })} />
           </div>
           <p className="mt-3 mb-2 text-sm font-bold text-ink-soft">Кто читает сказку</p>
-          <Segmented ariaLabel="Источник голоса" value={settings.voiceSource} onChange={(v) => updateSettings({ voiceSource: v })} options={[{ id: 'tts', label: 'Синтез речи' }, { id: 'parent', label: 'Папа читает' }]} />
-          <p className="mt-2 text-sm text-ink-soft">
-            {speechOk ? 'Синтез речи работает через браузер (Web Speech API). Голос можно выбрать в настройках чтения.' : 'Этот браузер не поддерживает синтез речи — сказки можно читать вслух или записать голос родителя.'}
-          </p>
+          <VoicePicker />
+          {!speechOk && <p className="mt-2 text-sm text-[#a2305a]">Этот браузер не поддерживает голос браузера — подойдёт живой голос, запись родителя или чтение вслух.</p>}
           <label className="mt-3 block text-sm font-bold text-ink-soft">Скорость речи: {settings.speechRate.toFixed(2)}</label>
           <input className="range mt-2" type="range" min={0.6} max={1.2} step={0.05} value={settings.speechRate} onChange={(e) => updateSettings({ speechRate: Number(e.target.value) })} aria-label="Скорость речи" />
         </Card>

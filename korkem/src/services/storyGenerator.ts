@@ -13,6 +13,8 @@ export interface ServerStatus {
   story: boolean;
   illustration: boolean;
   model: string | null;
+  /** Провайдер живого голоса на сервере или null */
+  tts: string | null;
 }
 
 /** Проверяет, настроен ли серверный AI. Если сервера нет — AI просто недоступен. */
@@ -24,9 +26,9 @@ export async function fetchServerStatus(): Promise<ServerStatus> {
     clearTimeout(t);
     if (!r.ok || !(r.headers.get('content-type') ?? '').includes('json')) throw new Error();
     const j = (await r.json()) as ServerStatus;
-    return { story: !!j.story, illustration: !!j.illustration, model: j.model ?? null };
+    return { story: !!j.story, illustration: !!j.illustration, model: j.model ?? null, tts: j.tts ?? null };
   } catch {
-    return { story: false, illustration: false, model: null };
+    return { story: false, illustration: false, model: null, tts: null };
   }
 }
 
