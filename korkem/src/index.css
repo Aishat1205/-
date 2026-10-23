@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito", ui-rounded, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Lora", "Georgia", "Times New Roman", serif;
+  --color-cream: #fbf6ee;
+  --color-cream-2: #f5ece0;
+  --color-ink: #2b2552;
+  --color-ink-soft: #5f587e;
+  --color-lavender: #b9a2e8;
+  --color-lavender-soft: #e9e1fa;
+  --color-rose: #f2a0be;
+  --color-rose-soft: #fce4ec;
+  --color-sky: #9fc7f0;
+  --color-sky-soft: #e2f0fb;
+  --color-gold: #f6c76b;
+  --color-night: #1d1a45;
+  --shadow-soft: 0 10px 30px -12px rgba(43, 37, 82, 0.25), 0 2px 6px -2px rgba(43, 37, 82, 0.08);
+  --shadow-lift: 0 22px 50px -20px rgba(43, 37, 82, 0.45);
+}
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --story-size: 1.3rem;
+  color-scheme: light;
+}
+:root[data-font='m'] { --story-size: 1.12rem; }
+:root[data-font='l'] { --story-size: 1.3rem; }
+:root[data-font='xl'] { --story-size: 1.55rem; }
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-cream);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+#root { min-height: 100%; }
+
+.app-bg {
+  background:
+    radial-gradient(60rem 30rem at 110% -10%, rgba(185, 162, 232, 0.35), transparent 60%),
+    radial-gradient(40rem 26rem at -20% 20%, rgba(242, 160, 190, 0.22), transparent 60%),
+    radial-gradient(50rem 30rem at 50% 120%, rgba(159, 199, 240, 0.28), transparent 60%),
+    var(--color-cream);
+  background-attachment: fixed;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(1.3);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+}
+
+.pt-safe { padding-top: max(var(--safe-top), 0.75rem); }
+.pb-safe { padding-bottom: calc(var(--safe-bottom) + 0.5rem); }
+.pb-nav { padding-bottom: calc(var(--safe-bottom) + 7rem); }
+
+.story-text { font-family: var(--font-serif); font-size: var(--story-size); line-height: 1.6; }
+.story-text.child-mode { font-size: calc(var(--story-size) * 1.25); line-height: 1.55; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+button, a, [role='button'] { touch-action: manipulation; }
+:focus-visible { outline: 3px solid #8a74d8; outline-offset: 2px; border-radius: 12px; }
+
+/* ——— Анимации иллюстраций (лёгкие, только transform/opacity) ——— */
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes twinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@keyframes drift { 0% { transform: translateX(-12px); } 50% { transform: translateX(12px); } 100% { transform: translateX(-12px); } }
+@keyframes firefly {
+  0% { transform: translate(0, 0); opacity: 0; }
+  20% { opacity: 1; }
+  50% { transform: translate(14px, -18px); opacity: 0.6; }
+  80% { opacity: 1; }
+  100% { transform: translate(-6px, -34px); opacity: 0; }
+}
+@keyframes fall { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(-30px, 330px) rotate(240deg); opacity: 0.6; } }
+@keyframes rise { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-330px); opacity: 0; } }
+@keyframes rain { 0% { transform: translate(0, 0); } 100% { transform: translate(-20px, 330px); } }
+@keyframes zzz { 0% { transform: translate(0, 8px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translate(10px, -16px); opacity: 0; } }
+@keyframes sway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes flap { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.6); } }
+@keyframes wag { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(14deg); } }
+@keyframes flicker { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+@keyframes breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes shimmer { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.8; } }
+
+svg .anim-float { animation: float 5s ease-in-out infinite; }
+svg .anim-twinkle { animation: twinkle 3.2s ease-in-out infinite; }
+svg .anim-drift { animation: drift 40s ease-in-out infinite; }
+svg .anim-firefly { animation: firefly 7s ease-in-out infinite; }
+svg .anim-fall { animation: fall 10s linear infinite; }
+svg .anim-rise { animation: rise 9s linear infinite; }
+svg .anim-rain { animation: rain 1.1s linear infinite; }
+svg .anim-zzz { animation: zzz 3s ease-in-out infinite; }
+svg .anim-sway { animation: sway 5s ease-in-out infinite; transform-box: fill-box; transform-origin: bottom center; }
+svg .anim-sway-slow { animation: sway 7s ease-in-out infinite; transform-box: fill-box; transform-origin: bottom center; }
+svg .anim-flap { animation: flap 0.9s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+svg .anim-wag { animation: wag 0.8s ease-in-out infinite; transform-box: fill-box; transform-origin: bottom right; }
+svg .anim-flicker { animation: flicker 1.2s ease-in-out infinite; }
+svg .anim-breathe { animation: breathe 4s ease-in-out infinite; }
+svg .anim-bounce { animation: bounce 1.6s ease-in-out infinite; }
+svg .anim-shimmer { animation: shimmer 4s ease-in-out infinite; }
+
+/* Обложки в списках — статичные, чтобы не нагружать устройство */
+svg.svg-static * { animation: none !important; }
+.svg-static .anim-fall, .svg-static .anim-rise, .svg-static .anim-rain, .svg-static .anim-firefly { opacity: 0.7; }
+
+.reduce-motion svg *, .reduce-motion .motion-safe-only { animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  svg * { animation: none !important; }
+}
+
+/* Карточки */
+.card-hover { transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s; }
+@media (hover: hover) {
+  .card-hover:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+}
+.card-hover:active { transform: scale(0.98); }
+
+.range { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 999px; background: #e9e1fa; outline: none; }
+.range::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 3px solid #8a74d8; box-shadow: 0 2px 8px rgba(43,37,82,.25); }
+.range::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid #8a74d8; }
+
+input, textarea, select { font-size: 16px; } /* iOS не увеличивает масштаб при фокусе */
