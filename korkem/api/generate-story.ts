@@ -1,6 +1,6 @@
 // Vercel Serverless Function: POST /api/generate-story
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { generateStory, isConfigured, validateRequest } from '../server/storyAi.ts';
+import { generateStory, isConfigured, validateRequest } from '../server/storyAi.js';
 
 export const config = { maxDuration: 120 };
 
