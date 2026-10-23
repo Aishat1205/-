@@ -1,12 +1,13 @@
 import type { FairyTale } from '../types';
 
 /**
- * Художественные иллюстрации, нарисованные нейросетью (сервис Pollinations, модель Flux).
+ * Художественные иллюстрации, нарисованные нейросетью (бесплатный сервис Pollinations).
  * Файлы лежат в public/art/<id сказки>/<номер сцены>.webp.
- * Если для сказки картинок нет — используется рисованная графика приложения.
+ * Для сцен без картинки (и для сказок без картинок) используется рисованная графика приложения.
  */
-const PAINTED: Record<string, { scenes: number; cover: number }> = {
-  // 'little-bunny': { scenes: 14, cover: 4 }, — добавляется, когда картинки готовы
+const PAINTED: Record<string, { scenes: number[]; cover: number }> = {
+  // Сцена 5 исключена: нейросеть нарисовала её неудачно
+  'little-bunny': { scenes: [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14], cover: 4 },
 };
 
 export function withPaintedArt(story: FairyTale): FairyTale {
@@ -16,7 +17,7 @@ export function withPaintedArt(story: FairyTale): FairyTale {
   return {
     ...story,
     cover: { ...story.cover, imageUrl: url(art.cover) },
-    scenes: story.scenes.map((s, i) => (i < art.scenes ? { ...s, illustration: { ...s.illustration, imageUrl: url(i + 1) } } : s)),
+    scenes: story.scenes.map((s, i) => (art.scenes.includes(i + 1) ? { ...s, illustration: { ...s.illustration, imageUrl: url(i + 1) } } : s)),
   };
 }
 
