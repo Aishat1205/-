@@ -79,6 +79,12 @@ export function Settings() {
             <Toggle label="Режим «Перед сном»" hint="Тёмный экран, тише музыка, медленнее голос" checked={settings.bedtimeMode} onChange={(v) => updateSettings({ bedtimeMode: v })} />
             <Toggle label="Автопереход сцен" hint="После окончания озвучивания" checked={settings.autoAdvance} onChange={(v) => updateSettings({ autoAdvance: v })} />
             <Toggle label="Анимации" hint="Мерцание звёзд, облака, светлячки" checked={settings.animationsEnabled} onChange={(v) => updateSettings({ animationsEnabled: v })} />
+            <Toggle
+              label="Художественные иллюстрации (бета)"
+              hint="Картинки, нарисованные нейросетью. Пока есть для сказки «Маленький зайчонок»; в остальных — рисованная графика"
+              checked={settings.artStyle === 'painted'}
+              onChange={(v) => updateSettings({ artStyle: v ? 'painted' : 'vector' })}
+            />
           </div>
         </Card>
 

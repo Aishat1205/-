@@ -58,6 +58,8 @@ export interface AppSettings {
   musicVolume: number;
   musicTrack: string;
   animationsEnabled: boolean;
+  /** painted — художественные картинки там, где они есть; vector — рисованная графика приложения */
+  artStyle: 'painted' | 'vector';
   soundEnabled: boolean;
   fontSize: FontSize;
   readingMode: ReadingMode;

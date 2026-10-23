@@ -322,6 +322,7 @@ export function Reader() {
               appearance={profile.appearance}
               animate={!reducedMotion}
               className="h-full w-full"
+              detail
               label={`Иллюстрация к сцене ${index + 1}`}
             />
           </motion.div>

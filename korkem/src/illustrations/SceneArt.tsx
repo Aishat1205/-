@@ -25,9 +25,15 @@ interface Props {
   animate?: boolean;
   className?: string;
   label?: string;
+  /** Крупная сцена в читалке: добавляет объёмную светотень */
+  detail?: boolean;
 }
 
-function SceneArtInner({ spec, appearance, animate = true, className, label }: Props) {
+/** Safari очень медленно рисует SVG-фильтры — там объёмная светотень отключена. */
+const IS_SAFARI = typeof navigator !== 'undefined' && /^((?!chrome|chromium|crios|android|edg).)*safari/i.test(navigator.userAgent);
+
+function SceneArtInner({ spec, appearance, animate = true, className, label, detail = false }: Props) {
+  const volume = detail && !IS_SAFARI;
   const uid = 'k' + useId().replace(/[^a-zA-Z0-9]/g, '');
   const time = spec.time ?? 'day';
   const palette = SKY[time];
@@ -47,9 +53,9 @@ function SceneArtInner({ spec, appearance, animate = true, className, label }: P
       key: `p${i}`,
       node: (
         <g key={`p${i}`} transform={`translate(${x} ${y})`}>
-          <g className={p.float && animate ? 'anim-float' : undefined} style={p.float ? { animationDelay: `${(i * 0.7) % 3}s` } : undefined}>
+          <g className={p.float && animate && !(volume && !NO_VOLUME.includes(p.kind)) ? 'anim-float' : undefined} style={p.float ? { animationDelay: `${(i * 0.7) % 3}s` } : undefined}>
             <g transform={`scale(${p.flip ? -s : s} ${s})`} filter={p.glow ? `url(#${uid}-glowsoft)` : undefined}>
-              <g filter={animate && !NO_VOLUME.includes(p.kind) ? `url(#${uid}-vol)` : undefined}>
+              <g filter={volume && !NO_VOLUME.includes(p.kind) ? `url(#${uid}-vol)` : undefined}>
                 <PropShape kind={p.kind} variant={p.variant} uid={uid} />
               </g>
             </g>
@@ -69,8 +75,8 @@ function SceneArtInner({ spec, appearance, animate = true, className, label }: P
       key: 'hero',
       node: (
         <g key="hero" transform={`translate(${x} ${y})`}>
-          <g className={animate && h.pose === 'jump' ? 'anim-bounce' : animate && h.pose !== 'sleep' ? 'anim-breathe' : undefined}>
-            <g transform={`scale(${h.flip ? -s : s} ${s})`} filter={animate ? `url(#${uid}-vol)` : undefined}>
+          <g className={animate && !volume && h.pose === 'jump' ? 'anim-bounce' : animate && !volume && h.pose !== 'sleep' ? 'anim-breathe' : undefined}>
+            <g transform={`scale(${h.flip ? -s : s} ${s})`} filter={volume ? `url(#${uid}-vol)` : undefined}>
               <Heroine placement={h} appearance={appearance} uid={uid} />
             </g>
           </g>
@@ -136,11 +142,6 @@ function SceneArtInner({ spec, appearance, animate = true, className, label }: P
             <feMergeNode in="light" />
           </feMerge>
         </filter>
-        {/* Фактура бумаги и красок */}
-        <filter id={`${uid}-paper`} x="0" y="0" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" stitchTiles="stitch" />
-          <feColorMatrix type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.42  0 0 0 0 0.35  0 0 0 0.9 0" />
-        </filter>
         <radialGradient id={`${uid}-vig`} cx="0.5" cy="0.45" r="0.75">
           <stop offset="0.6" stopColor="#000" stopOpacity="0" />
           <stop offset="1" stopColor="#140F30" stopOpacity={night ? 0.5 : 0.22} />
@@ -158,10 +159,9 @@ function SceneArtInner({ spec, appearance, animate = true, className, label }: P
           <Backdrop setting={spec.setting} time={time} uid={uid} />
           {items.map((it) => it.node)}
           <Fx kinds={spec.fx ?? []} heroX={heroX} uid={uid} indoor={indoor} />
-          {animate && <rect width="400" height="300" filter={`url(#${uid}-paper)`} opacity="0.07" style={{ mixBlendMode: 'multiply' }} />}
         </>
       )}
-      <rect width="400" height="300" fill={`url(#${uid}-light)`} style={{ mixBlendMode: 'soft-light' }} />
+      <rect width="400" height="300" fill={`url(#${uid}-light)`} />
       <rect width="400" height="300" fill={`url(#${uid}-vig)`} />
     </svg>
   );
