@@ -8,6 +8,7 @@
     "dev:api": "node --experimental-strip-types server/dev-server.ts",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
+    "build:artifact": "VITE_ARTIFACT=1 vite build",
     "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {

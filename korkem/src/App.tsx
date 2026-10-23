@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
 import { AppProvider } from './state/AppContext';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
@@ -14,6 +14,9 @@ import { Settings } from './pages/Settings';
 import { About } from './pages/About';
 import { RecordStudio } from './pages/RecordStudio';
 import { EmptyState } from './components/ui';
+
+// В сборке для Artifact адресная строка недоступна — используем маршрутизацию в памяти.
+const Router = import.meta.env.VITE_ARTIFACT ? MemoryRouter : BrowserRouter;
 
 const DevGallery = import.meta.env.DEV ? lazy(() => import('./pages/DevGallery')) : null;
 
@@ -34,7 +37,7 @@ function NotFound() {
 export default function App() {
   return (
     <AppProvider>
-      <BrowserRouter>
+      <Router>
         <ScrollToTop />
         <Routes>
           <Route element={<Layout />}>
@@ -55,7 +58,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
-      </BrowserRouter>
+      </Router>
     </AppProvider>
   );
 }

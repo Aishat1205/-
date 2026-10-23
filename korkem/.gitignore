@@ -6,3 +6,4 @@ dev-dist
 *.log
 .vercel
 tsconfig.tsbuildinfo
+dist-artifact

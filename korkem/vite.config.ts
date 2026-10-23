@@ -3,11 +3,16 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const artifact = !!process.env.VITE_ARTIFACT;
+
 export default defineConfig({
+  base: artifact ? './' : '/',
+  build: artifact ? { outDir: 'dist-artifact' } : undefined,
+  resolve: artifact ? { alias: { 'virtual:pwa-register': '/src/lib/pwa-stub.ts' } } : undefined,
   plugins: [
     react(),
     tailwindcss(),
-    VitePWA({
+    !artifact && VitePWA({
       registerType: 'autoUpdate',
       manifestFilename: 'manifest.webmanifest',
       includeAssets: ['icons/*.png', 'icons/*.svg'],
