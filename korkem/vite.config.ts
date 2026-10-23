@@ -48,7 +48,9 @@ export default defineConfig({
     }),
   ],
   server: {
+    port: 2233,
     host: true,
     proxy: { '/api': 'http://localhost:8787' },
   },
+  preview: { port: 2234, host: true, proxy: { '/api': 'http://localhost:8787' } },
 });

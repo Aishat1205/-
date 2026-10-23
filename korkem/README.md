@@ -8,14 +8,14 @@
 ```bash
 cd korkem
 npm install
-npm run dev          # http://localhost:5173 (в той же сети: http://<IP-компьютера>:5173)
+npm run dev          # http://localhost:2233 (в той же сети: http://<IP-компьютера>:2233)
 ```
 
 Сборка и проверка production-версии (с Service Worker и офлайн-режимом):
 
 ```bash
 npm run build        # проверка типов + сборка в dist/
-npm run preview      # http://localhost:4173
+npm run preview      # http://localhost:2234
 ```
 
 Необязательный AI-сервер для генерации сказок:
